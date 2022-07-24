@@ -1,0 +1,3 @@
+# Ignoring build files
+**/obj/**
+**/bin/**
