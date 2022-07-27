@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgerDeviceAPI", "AgerDeviceAPI.csproj", "{21E1126C-EEE9-4560-9D56-029C0B31F462}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgerDeviceAPI", "\AgerDeviceAPI\AgerDeviceAPI.csproj", "{21E1126C-EEE9-4560-9D56-029C0B31F462}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgerDevice", "..\AgerDevice\AgerDevice.csproj", "{BB4C7F61-EECB-48E4-AC5A-906C3709EF0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgerDevice", "\AgerDevice\AgerDevice.csproj", "{BB4C7F61-EECB-48E4-AC5A-906C3709EF0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
