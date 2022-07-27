@@ -1,3 +1,4 @@
 # Ignoring build files
 **/obj/**
 **/bin/**
+**/.vs/**
