@@ -7,9 +7,17 @@ namespace AgerDeviceAPI
     {
         private static IConfigurationRoot GetConfigurationSettings()
         {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+            }
+
             return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("AgerDeviceAPI/appsettings.json")
                 .Build();
         }
 
