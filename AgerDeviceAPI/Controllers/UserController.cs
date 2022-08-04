@@ -17,13 +17,16 @@ namespace AgerDeviceAPI.Controllers
             _usersHandler = usersHandler;
         }
 
-        ///
-
+        /// <summary>
+        /// Endpoint to query for a username, returning true if the username is available or false if it's taken
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{username}")]
-        public async Task<ActionResult<string>> TestUsername(string username)
+        public async Task<ActionResult<bool>> TestUsername(string username)
         {
-            return Ok(username);
+            return Ok(true);
         }
     }
 }
