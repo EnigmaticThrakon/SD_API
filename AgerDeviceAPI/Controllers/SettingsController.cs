@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using AgerDevice.Redis;
 
 namespace AgerDeviceAPI.Controllers
 {
@@ -9,7 +10,7 @@ namespace AgerDeviceAPI.Controllers
     {
         private ILogger _logger;
 
-        public SettingsController(ILogger<WeatherForecastController> logger)
+        public SettingsController(ILogger<SettingsController> logger)
         {
             _logger = logger;
         }
