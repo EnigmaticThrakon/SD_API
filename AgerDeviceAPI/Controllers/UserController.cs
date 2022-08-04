@@ -22,11 +22,17 @@ namespace AgerDeviceAPI.Controllers
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPut]
         [Route("{username}")]
-        public async Task<ActionResult<bool>> TestUsername(string username)
+        public async Task<ActionResult<Guid>> ApplyUsername(string username)
         {
-            return Ok(true);
+            Guid userId = await _usersHandler.ApplyUsername(username);
+            if(userId == Guid.Empty)
+            {
+                return BadRequest();
+            }
+
+            return Ok(userId);
         }
     }
 }
