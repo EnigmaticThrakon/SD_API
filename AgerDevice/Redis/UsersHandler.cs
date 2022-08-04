@@ -16,11 +16,12 @@ namespace AgerDevice.Redis
         public UsersHandler(ConnectionMultiplexer connectionMultiplexer)
         {
             _redis = connectionMultiplexer;
-            _tableName = "Users";
+            _tableName = "users";
         }
 
-        public List<string> QueryUsers(UsersQuery query)
+        public async Task<bool> UsernameExists(string username)
         {
+            return true;
         }
     }
 }
