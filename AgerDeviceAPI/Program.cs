@@ -7,18 +7,32 @@ namespace AgerDeviceAPI
     {
         private static IConfigurationRoot GetConfigurationSettings()
         {
-            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            //{
+            try
+            {
                 return new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json")
                     .Build();
-            //}
+            }
+            catch
+            {
+                return new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("AgerDeviceAPI/appsettings.json")
+                    .Build();
+            }
+            // //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            // //{
+            //     return new ConfigurationBuilder()
+            //         .SetBasePath(Directory.GetCurrentDirectory())
+            //         .AddJsonFile("appsettings.json")
+            //         .Build();
+            // //}
 
-            return new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("AgerDeviceAPI/appsettings.json")
-                .Build();
+            // return new ConfigurationBuilder()
+            //     .SetBasePath(Directory.GetCurrentDirectory())
+            //     .AddJsonFile("AgerDeviceAPI/appsettings.json")
+            //     .Build();
         }
 
         public static async Task Main(string[] args)
