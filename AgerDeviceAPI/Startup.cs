@@ -3,6 +3,9 @@ using AgerDevice.DependencyResolution;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AgerDeviceAPI
 {
