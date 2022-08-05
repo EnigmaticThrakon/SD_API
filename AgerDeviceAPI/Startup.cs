@@ -74,10 +74,11 @@ namespace AgerDeviceAPI
             );
 
             app.UseRouting();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<AgerDevice.Hubs.DeviceHub>("/deviceHub");
+                endpoints.MapHub<AgerDevice.Hubs.DeviceHub>("agerDeviceHub");
                 endpoints.MapHub<AgerDevice.Hubs.MonitorHub>("/monitorHub");
             });
 
