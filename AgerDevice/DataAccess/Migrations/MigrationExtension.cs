@@ -11,7 +11,7 @@ namespace AgerDevice.DataAccess.Migrations
         public static ICreateTableWithColumnSyntax WithAgerDeviceModel(this ICreateTableWithColumnSyntax table)
         {
             return table
-                .WithColumn("Id").AsString(36).PrimaryKey()
+                .WithColumn("Id").AsGuid().PrimaryKey()
                 .WithColumn("Timestamp").AsDateTime()
                 .WithColumn("Modified").AsDateTime().Nullable();
         }
