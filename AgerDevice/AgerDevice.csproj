@@ -7,14 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="FluentMigrator" Version="3.3.2" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.7" />
+    <PackageReference Include="MySql.Data" Version="8.0.30" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.48" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.19" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Core\ViewModels\" />
+    <Folder Include="DataAccess\MySQL\" />
   </ItemGroup>
 
 </Project>
