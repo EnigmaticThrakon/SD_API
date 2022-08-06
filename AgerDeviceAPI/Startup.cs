@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using System.Data;
+using AgerDevice.DataAccess.Migrations;
 
 namespace AgerDeviceAPI
 {
@@ -36,7 +37,7 @@ namespace AgerDeviceAPI
                 .ConfigureRunner(rb => rb
                     .AddMySql5()
                     .WithGlobalConnectionString(Configuration.GetConnectionString("AgerDevice"))
-                    .ScanIn(typeof(CreatingTables).Assembly).For.Migrations())
+                    .ScanIn(typeof(CreatingInitialTables).Assembly).For.Migrations())
                 .AddLogging(lb => lb.AddFluentMigratorConsole());
 
             services.AddControllers();
