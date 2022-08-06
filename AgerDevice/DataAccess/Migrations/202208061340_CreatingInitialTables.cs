@@ -7,11 +7,11 @@ namespace AgerDevice.DataAccess.Migrations
     {
         public override void Up()
         {
-            Create.Table("Users");
-            Create.Table("Units");
-            Create.Table("Groups");
-            Create.Table("UserSettings");
-            Create.Table("UnitSettings");
+            Create.Table("Users").WithAgerDeviceModel();
+            Create.Table("Units").WithAgerDeviceModel();
+            Create.Table("Groups").WithAgerDeviceModel();
+            Create.Table("UserSettings").WithAgerDeviceModel();
+            Create.Table("UnitSettings").WithAgerDeviceModel();
         }
 
         public override void Down()

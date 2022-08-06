@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using AgerDevice.Redis;
 
 namespace AgerDeviceAPI.Controllers
 {
@@ -9,12 +8,10 @@ namespace AgerDeviceAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ILogger _logger;
-        private readonly UsersHandler _usersHandler;
 
-        public UsersController(ILogger<UsersController> logger, UsersHandler usersHandler)
+        public UsersController(ILogger<UsersController> logger)
         {
             _logger = logger;
-            _usersHandler = usersHandler;
         }
 
         /// <summary>

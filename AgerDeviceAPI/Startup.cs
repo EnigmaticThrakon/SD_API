@@ -35,7 +35,7 @@ namespace AgerDeviceAPI
 
             services.AddFluentMigratorCore()
                 .ConfigureRunner(rb => rb
-                    .AddMySql5()
+                    .AddMySql4()
                     .WithGlobalConnectionString(Configuration.GetConnectionString("AgerDevice"))
                     .ScanIn(typeof(CreatingInitialTables).Assembly).For.Migrations())
                 .AddLogging(lb => lb.AddFluentMigratorConsole());
