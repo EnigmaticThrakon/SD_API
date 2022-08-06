@@ -1,11 +1,13 @@
 ﻿using StackExchange.Redis;
 using AgerDevice.DependencyResolution;
 using Microsoft.OpenApi.Models;
+using FluentMigrator.Runner;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using System.Data;
 
 namespace AgerDeviceAPI
 {
@@ -20,7 +22,7 @@ namespace AgerDeviceAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<ConnectionMultiplexer>(t => ConnectionMultiplexer.Connect("localhost"));
+            services.AddTransient<Func<IDbConnection>>(t => () => new MySql.Data.MySqlClient.MySqlConnection(Configuration.GetConnectionString("AgerDevice")));
             services.AddAgerDevice();
 
             services.AddSignalR();
@@ -29,6 +31,13 @@ namespace AgerDeviceAPI
                 c.AddConsole();
                 c.AddDebug();
             });
+
+            services.AddFluentMigratorCore()
+                .ConfigureRunner(rb => rb
+                    .AddMySql5()
+                    .WithGlobalConnectionString(Configuration.GetConnectionString("AgerDevice"))
+                    .ScanIn(typeof(CreatingTables).Assembly).For.Migrations())
+                .AddLogging(lb => lb.AddFluentMigratorConsole());
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -90,6 +99,15 @@ namespace AgerDeviceAPI
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "AgerDevice API");
             });
+        }
+
+        private void InitializeDatabase(IApplicationBuilder app)
+        {
+            using (IServiceScope scope = app.ApplicationServices.CreateScope())
+            {
+                ILogger<Startup> logger = scope.ServiceProvider.GetRequiredService<ILogger<Startup>>();
+                logger.LogEmphasized("Migration Complete");
+            }
         }
     }
 }
