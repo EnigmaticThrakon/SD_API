@@ -18,21 +18,15 @@ namespace AgerDeviceAPI.Controllers
         }
 
         /// <summary>
-        /// Endpoint to query for a username, returning true if the username is available or false if it's taken
+        /// Endpoint to get a user ID from a passed in device ID
         /// </summary>
-        /// <param name="username"></param>
+        /// <param name="deviceId"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("{username}")]
-        public async Task<ActionResult<Guid>> ApplyUsername(string username)
+        [Route("{deviceId}")]
+        public async Task<ActionResult<string>> GetUserId(string deviceId)
         {
-            Guid userId = await _usersHandler.ApplyUsername(username);
-            if(userId == Guid.Empty)
-            {
-                return BadRequest();
-            }
-
-            return Ok(userId);
+            return Guid.NewGuid().ToString();
         }
     }
 }
