@@ -75,7 +75,7 @@ namespace AgerDeviceAPI
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<AgerDevice.Hubs.DeviceHub>("agerDeviceHub");
-                endpoints.MapHub<AgerDevice.Hubs.MonitorHub>("/monitorHub");
+                endpoints.MapHub<AgerDevice.Hubs.MonitorHub>("appMonitorHub");
             });
 
             app.UseSwagger();
