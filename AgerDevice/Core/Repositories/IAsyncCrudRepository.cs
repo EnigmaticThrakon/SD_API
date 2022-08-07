@@ -9,6 +9,6 @@ namespace AgerDevice.Core.Repositories
     {
         Task CreateAsync(T record);
         Task UpdateAsync(T record);
-        Task DeleteAsync(string id);
+        Task DeleteAsync(Guid id);
     }
 }
