@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AgerDevice.Core.Models;
+using AgerDevice.Managers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgerDeviceAPI.Controllers
@@ -8,10 +10,12 @@ namespace AgerDeviceAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ILogger _logger;
+        private readonly UserManager _userManager;
 
-        public UsersController(ILogger<UsersController> logger)
+        public UsersController(ILogger<UsersController> logger, UserManager userManager)
         {
             _logger = logger;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -23,7 +27,17 @@ namespace AgerDeviceAPI.Controllers
         [Route("{deviceId}")]
         public async Task<ActionResult<string>> GetUserId(string deviceId)
         {
-            return Guid.NewGuid().ToString();
+            User results = _userManager.
+            User tempUser = new User() {
+                Id = Guid.NewGuid(),
+                Modified = DateTime.Now,
+                IsDeleted = false,
+                DeviceId = deviceId
+            };
+
+            await _userManager.CreateAsync(tempUser);
+
+            return tempUser.Id.ToString();
         }
     }
 }
