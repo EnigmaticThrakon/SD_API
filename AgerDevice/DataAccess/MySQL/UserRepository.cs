@@ -23,13 +23,21 @@ namespace AgerDevice.DataAccess.MySQL
         {
             using (IDbConnection connection = _connectionFactory())
             {
+                connection.Open(); 
+
                 await connection.ExecuteAsync($@"INSERT INTO Users
                 (
                     {nameof(User.Id)},
+                    {nameof(User.Modified)},
+                    {nameof(User.DeviceId)},
+                    {nameof(User.IsDeleted)}
                 ) 
                 VALUES 
                 (
                     @{nameof(User.Id)},
+                    @{nameof(User.Modified)},
+                    @{nameof(User.DeviceId)},
+                    @{nameof(User.IsDeleted)}
                 )", user);
             }
         }
@@ -52,7 +60,7 @@ namespace AgerDevice.DataAccess.MySQL
                 }
 
                 string sql = $@"SELECT
-                u.{nameof(User.Id)},
+                *
                 FROM Units u
                 WHERE 1=1 ";
 
@@ -60,6 +68,24 @@ namespace AgerDevice.DataAccess.MySQL
                 {
                     parameters.Add(nameof(query.Id), query.Id, DbType.String);
                     sql += $@" AND {nameof(User.Id)} = @{nameof(query.Id)}";
+                }
+
+                if (query.DeviceId != null)
+                {
+                    parameters.Add(nameof(query.DeviceId), query.DeviceId, DbType.String);
+                    sql += $@" AND {nameof(User.DeviceId)} = @{nameof(query.DeviceId)}";
+                }
+
+                if (query.Modified != null)
+                {
+                    parameters.Add(nameof(query.Modified), query.Modified, DbType.DateTime);
+                    sql += $@" AND {nameof(User.Modified)} = @{nameof(query.Modified)}";
+                }
+
+                if (query.IsDeleted != null)
+                {
+                    parameters.Add(nameof(query.IsDeleted), query.IsDeleted, DbType.DateTime);
+                    sql += $@" AND {nameof(User.IsDeleted)} = @{nameof(query.IsDeleted)}";
                 }
 
                 Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Units");
@@ -89,6 +115,8 @@ namespace AgerDevice.DataAccess.MySQL
             {
                 await connection.ExecuteAsync($@"UPDATE Units SET
                     {nameof(User.DeviceId)} = @{nameof(User.DeviceId)},
+                    {nameof(User.Modified)} = @{nameof(User.Modified)},
+                    {nameof(User.IsDeleted)} = @{nameof(User.IsDeleted)},
                     WHERE {nameof(User.Id)} = @{nameof(User.Id)}",
                 record);
             }
