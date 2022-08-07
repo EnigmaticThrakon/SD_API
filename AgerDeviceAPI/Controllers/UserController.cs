@@ -1,5 +1,6 @@
 ﻿using AgerDevice.Core.Models;
 using AgerDevice.Core.Query;
+using AgerDevice.Core.ViewModels;
 using AgerDevice.Managers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,9 +27,9 @@ namespace AgerDeviceAPI.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("{deviceId}")]
-        public async Task<ActionResult<string>> GetUserId(string deviceId)
+        public async Task<ActionResult<string>> GetUserId(UserViewModel model)
         {
-            PagedResult<User> results = await _userManager.QueryAsync(new UserQuery() { DeviceId = deviceId });
+            PagedResult<User> results = await _userManager.QueryAsync(new UserQuery() { DeviceId = model.DeviceId });
 
             if(results.FilteredCount > 0)
             {
@@ -43,7 +44,7 @@ namespace AgerDeviceAPI.Controllers
                 Id = Guid.NewGuid(),
                 Modified = DateTime.Now,
                 IsDeleted = false,
-                DeviceId = deviceId,
+                DeviceId = model.DeviceId,
                 LastConnected = DateTime.Now
             };
 
