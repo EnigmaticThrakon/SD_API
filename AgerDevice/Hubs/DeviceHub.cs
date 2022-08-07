@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AgerDevice.Services;
 using AgerDevice.Managers;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace AgerDevice.Hubs
 {
@@ -24,6 +25,8 @@ namespace AgerDevice.Hubs
 
         public async override Task OnConnectedAsync()
         {
+            var feature = Context.Features.Get<IHttpConnectionFeature>();
+            var remoteAddress = feature.RemoteIpAddress;
             await base.OnConnectedAsync();
         }
 
