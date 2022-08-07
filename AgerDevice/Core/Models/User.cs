@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace AgerDevice.Core.Models
 {
-    internal class User
+    public class User : IBase
     {
+        public Guid Id { get; set; }
+        public DateTime? Modified { get; set; }
+        public string? DeviceId { get; set; }
+        public bool? IsDeleted { get; set; }
+
+        public User() { }
     }
 }

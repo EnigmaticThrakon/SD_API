@@ -7,12 +7,7 @@ namespace AgerDevice.Core.Models
         /// <summary>
         /// Unique identifier.
         /// </summary>
-        string Id { get; set; }
-
-        /// <summary>
-        /// Creation timestamp in UTC.
-        /// </summary>
-        DateTime Timestamp { get; set; }
+        Guid Id { get; set; }
 
         /// <summary>
         /// Modified timestamp in UTC.
