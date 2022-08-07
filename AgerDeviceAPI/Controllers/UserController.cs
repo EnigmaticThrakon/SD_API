@@ -1,4 +1,5 @@
 ﻿using AgerDevice.Core.Models;
+using AgerDevice.Core.Query;
 using AgerDevice.Managers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,17 +28,28 @@ namespace AgerDeviceAPI.Controllers
         [Route("{deviceId}")]
         public async Task<ActionResult<string>> GetUserId(string deviceId)
         {
-            User results = _userManager.
-            User tempUser = new User() {
+            PagedResult<User> results = await _userManager.QueryAsync(new UserQuery() { DeviceId = deviceId });
+
+            if(results.FilteredCount > 0)
+            {
+                User returningUser = results[0];
+                returningUser.LastConnected = DateTime.Now;
+
+                await _userManager.UpdateAsync(returningUser);
+                return returningUser.Id.ToString();
+            }
+
+            User newUser = new User() {
                 Id = Guid.NewGuid(),
                 Modified = DateTime.Now,
                 IsDeleted = false,
-                DeviceId = deviceId
+                DeviceId = deviceId,
+                LastConnected = DateTime.Now
             };
 
-            await _userManager.CreateAsync(tempUser);
+            await _userManager.CreateAsync(newUser);
 
-            return tempUser.Id.ToString();
+            return newUser.Id.ToString();
         }
     }
 }
