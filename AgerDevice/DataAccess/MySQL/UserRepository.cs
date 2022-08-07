@@ -125,7 +125,7 @@ namespace AgerDevice.DataAccess.MySQL
         {
             using(IDbConnection connection = _connectionFactory())
             {
-                await connection.ExecuteAsync($@"UPDATE Units SET
+                await connection.ExecuteAsync($@"UPDATE Users SET
                     {nameof(User.DeviceId)} = @{nameof(User.DeviceId)},
                     {nameof(User.Modified)} = @{nameof(User.Modified)},
                     {nameof(User.IsDeleted)} = @{nameof(User.IsDeleted)},
