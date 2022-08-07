@@ -62,3 +62,5 @@ To be run on the intermediate server that the device will connect to and the use
     CREATE DATABASE AgerDevice;
     CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
     GRANT ALL PRIVILEGES ON AgerDevice.* TO 'user'@'localhost' WITH GRANT OPTION;
+
+*Changes to the database are handled through the Fluent Migrator tools that are setup in `AgerDevice > DataAccess > Migrations` and are automatically applied when the project is started*
