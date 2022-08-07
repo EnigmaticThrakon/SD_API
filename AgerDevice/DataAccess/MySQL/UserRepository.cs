@@ -30,19 +30,21 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.Id)},
                     {nameof(User.Modified)},
                     {nameof(User.DeviceId)},
-                    {nameof(User.IsDeleted)}
+                    {nameof(User.IsDeleted)},
+                    {nameof(User.LastConnected)}
                 ) 
                 VALUES 
                 (
                     @{nameof(User.Id)},
                     @{nameof(User.Modified)},
                     @{nameof(User.DeviceId)},
-                    @{nameof(User.IsDeleted)}
+                    @{nameof(User.IsDeleted)},
+                    @{nameof(User.LastConnected)}
                 )", user);
             }
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(Guid id)
         {
             return;
         }
@@ -60,8 +62,12 @@ namespace AgerDevice.DataAccess.MySQL
                 }
 
                 string sql = $@"SELECT
-                *
-                FROM Units u
+                u.{nameof(User.Id)},
+                u.{nameof(User.LastConnected)},
+                u.{nameof(User.DeviceId)},
+                u.{nameof(User.Modified)},
+                u.{nameof(User.IsDeleted)}
+                FROM Users u
                 WHERE 1=1 ";
 
                 if (query.Id != null)
@@ -88,7 +94,13 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $@" AND {nameof(User.IsDeleted)} = @{nameof(query.IsDeleted)}";
                 }
 
-                Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Units");
+                if (query.LastConnected != null)
+                {
+                    parameters.Add(nameof(query.LastConnected), query.LastConnected, DbType.DateTime);
+                    sql += $@" AND {nameof(User.LastConnected)} = @{nameof(query.LastConnected)}";
+                }
+
+                Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Users");
                 Task<int> filteredRecords = connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM ({sql}) AS Results", parameters);
 
                 sql += $" ORDER BY {query.GetOrderByString()}";
@@ -117,6 +129,7 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.DeviceId)} = @{nameof(User.DeviceId)},
                     {nameof(User.Modified)} = @{nameof(User.Modified)},
                     {nameof(User.IsDeleted)} = @{nameof(User.IsDeleted)},
+                    {nameof(User.LastConnected)} = @{nameof(User.LastConnected)}
                     WHERE {nameof(User.Id)} = @{nameof(User.Id)}",
                 record);
             }
