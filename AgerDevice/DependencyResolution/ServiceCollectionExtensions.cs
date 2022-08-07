@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AgerDevice.Core.Repositories;
+using AgerDevice.Managers;
 using AgerDevice.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,6 +23,7 @@ namespace AgerDevice.DependencyResolution
 
         public static IServiceCollection AddRepositories(this IServiceCollection serviceCollection)
         {
+            serviceCollection.AddSingleton<IUserRepository, DataAccess.MySQL.UserRepository>();
             //serviceCollection.AddSingleton<IRepository, DataAccess.MySQL.Repository>();
 
             return serviceCollection;
@@ -28,6 +31,7 @@ namespace AgerDevice.DependencyResolution
 
         public static IServiceCollection AddManagers(this IServiceCollection serviceCollection)
         {
+            serviceCollection.AddTransient<UserManager>();
             //serviceCollection.AddTransient<Manager>();
 
             return serviceCollection;
