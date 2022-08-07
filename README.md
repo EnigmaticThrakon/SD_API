@@ -11,7 +11,9 @@ To be run on the intermediate server that the device will connect to and the use
 
 *Currently the development environment is a remote computer running `Ubuntu 20.04.4 LTS Desktop`*
 
-***The following are the terminal commands are used for environment setup***
+***
+
+**The following are the terminal commands are used for environment setup**
 
     sudo apt update 
     sudo apt upgrade -y 
@@ -28,7 +30,9 @@ To be run on the intermediate server that the device will connect to and the use
     suto apt install mysql-server
     sudo mysql_secure_installation
 
-***Nginx Requirements:***
+***
+
+**Nginx Requirements:**
 
 *Once nginx is installed, the default sites-enabled file needs to be updated to the following (found in `/etc/nginx/enabled-sites/default`):*
 
@@ -54,8 +58,10 @@ To be run on the intermediate server that the device will connect to and the use
 ***Note:*** 
 
     At this point the server can be reached from other devices that are within the same network, if it is to be accessed from outside the network then a dynamic DNS service should be used to gain access to the server's public IP and router port forwarding used to expose the necessary port to the outside
-    
-***MySQL Requirements:***
+
+***
+
+**MySQL Requirements:**
 
 *After MySQL is installed and the root user password is set, the following is done to prepare the database for the API application to connect and access the database:*
 
