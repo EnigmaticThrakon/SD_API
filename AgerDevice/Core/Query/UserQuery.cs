@@ -6,7 +6,7 @@ namespace AgerDevice.Core.Query
     {
         public Guid? Id { get; set; }
         public DateTime? Modified { get; set; }
-        public string? DeviceId { get; set; }
+        public string? SerialNumber { get; set; }
         public bool? IsDeleted { get; set; }
         public DateTime? LastConnected { get; set; }
 
@@ -14,7 +14,7 @@ namespace AgerDevice.Core.Query
         {
             Id = null;
             Modified = null;
-            DeviceId = null;
+            SerialNumber = null;
             IsDeleted = null;
             LastConnected = null;
         }
