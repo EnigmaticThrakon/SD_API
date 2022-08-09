@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace AgerDevice.Core.ViewModels
 {
-    public class UserViewModel
+    public class ConnectedDeviceViewModel
     {
         public Guid? Id { get; set; }
-        public string? DeviceId { get; set; }
+        public string? SerialNumber { get; set; }
         public string? PublicIP { get; set; }
 
-        public UserViewModel() { }
+        public ConnectedDeviceViewModel() { }
     }
 }
