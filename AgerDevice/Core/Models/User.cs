@@ -10,7 +10,7 @@ namespace AgerDevice.Core.Models
     {
         public Guid Id { get; set; }
         public DateTime? Modified { get; set; }
-        public string? DeviceId { get; set; }
+        public string? SerialNumber { get; set; }
         public bool? IsDeleted { get; set; }
         public DateTime? LastConnected { get; set; }
 
