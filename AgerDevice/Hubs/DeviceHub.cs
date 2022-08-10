@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using AgerDevice.Services;
 using AgerDevice.Managers;
 using Microsoft.AspNetCore.Http.Features;
+using AgerDevice.Core.Query;
+using AgerDevice.Core.Models;
 
 namespace AgerDevice.Hubs
 {
@@ -14,19 +16,44 @@ namespace AgerDevice.Hubs
     {
         private readonly AcquisitionService _acquisitionService;
         // private readonly UserManager _userManager;
-        // private readonly UnitManager _unitManager;
+        private readonly UnitManager _unitManager;
 
-        public DeviceHub(AcquisitionService acquisitionService)//, UserManager userManager, UnitManager unitManager)
+        public DeviceHub(AcquisitionService acquisitionService, UnitManager unitManager)//, UserManager userManager, UnitManager unitManager)
         {
             _acquisitionService = acquisitionService;
             // _userManager = userManager;
-            // _unitManager = unitManager;
+            _unitManager = unitManager;
         }
 
         public async override Task OnConnectedAsync()
         {
-            var feature = Context.Features.Get<IHttpConnectionFeature>();
-            var remoteAddress = feature.RemoteIpAddress;
+            Unit currentUnit;
+            try 
+            {
+                Guid unitId = Guid.Parse(Context.GetHttpContext().Request.Query["unit"]);
+                PagedResult<Unit> result = await _unitManager.QueryAsync(new Core.Query.UnitQuery() { Id = unitId });
+
+                if(result.FilteredCount > 0) 
+                {
+                    currentUnit = result[0];
+                }
+                else
+                {
+                    throw new Exception("No Units Found with ID: " + unitId);
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.Write(ex.Message);
+                throw new Exception();
+            }
+
+            IHttpConnectionFeature feature = Context.Features.Get<IHttpConnectionFeature>();
+            currentUnit.PublicIP = feature.RemoteIpAddress.ToString().Trim();
+            currentUnit.Modified = DateTime.Now;
+
+            await _unitManager.UpdateAsync(currentUnit);
+
             await base.OnConnectedAsync();
         }
 
