@@ -52,7 +52,10 @@ namespace AgerDevice.DataAccess.MySQL
 
         public async Task DeleteAsync(Guid id)
         {
-            return;
+            using(IDbConnection connection = _connectionFactory())
+            {
+                await connection.ExecuteAsync($@"DELETE FROM Users WHERE Id = '" + id.ToString() + "';");
+            }
         }
 
         public async Task<PagedResult<User>> QueryAsync(UserQuery query = null)
