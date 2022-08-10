@@ -20,7 +20,7 @@ namespace AgerDeviceAPI.Controllers
             _userManager = userManager;
         }
 
-                /// <summary>
+        /// <summary>
         /// Endpoint to get a user ID from a passed in serial number
         /// </summary>
         /// <param name="deviceId"></param>
