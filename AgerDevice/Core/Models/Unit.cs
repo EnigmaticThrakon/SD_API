@@ -12,6 +12,7 @@ namespace AgerDevice.Core.Models
         public DateTime? Modified { get; set; }
         public string? SerialNumber { get; set; }
         public bool? IsDeleted { get; set; }
+        public string? PublicIP { get; set; }
 
         public Unit() { }
     }

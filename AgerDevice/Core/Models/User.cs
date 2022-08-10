@@ -13,6 +13,7 @@ namespace AgerDevice.Core.Models
         public string? SerialNumber { get; set; }
         public bool? IsDeleted { get; set; }
         public DateTime? LastConnected { get; set; }
+        public string? PublicIP { get; set; }
 
         public User() { }
     }
