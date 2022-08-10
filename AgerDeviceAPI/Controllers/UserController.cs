@@ -45,7 +45,8 @@ namespace AgerDeviceAPI.Controllers
                 Modified = DateTime.Now,
                 IsDeleted = false,
                 SerialNumber = model.SerialNumber,
-                LastConnected = DateTime.Now
+                LastConnected = DateTime.Now,
+                GroupId = Guid.NewGuid()
             };
 
             await _userManager.CreateAsync(newUser);
