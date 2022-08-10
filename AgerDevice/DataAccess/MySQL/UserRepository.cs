@@ -31,7 +31,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.Modified)},
                     {nameof(User.SerialNumber)},
                     {nameof(User.IsDeleted)},
-                    {nameof(User.LastConnected)}
+                    {nameof(User.LastConnected)},
+                    {nameof(User.PublicIP)}
                 ) 
                 VALUES 
                 (
@@ -39,7 +40,8 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(User.Modified)},
                     @{nameof(User.SerialNumber)},
                     @{nameof(User.IsDeleted)},
-                    @{nameof(User.LastConnected)}
+                    @{nameof(User.LastConnected)},
+                    @{nameof(User.PublicIP)}
                 )", user);
             }
         }
@@ -66,7 +68,8 @@ namespace AgerDevice.DataAccess.MySQL
                 u.{nameof(User.LastConnected)},
                 u.{nameof(User.SerialNumber)},
                 u.{nameof(User.Modified)},
-                u.{nameof(User.IsDeleted)}
+                u.{nameof(User.IsDeleted)},
+                u.{nameof(User.PublicIP)}
                 FROM Users u
                 WHERE 1=1 ";
 
@@ -90,7 +93,7 @@ namespace AgerDevice.DataAccess.MySQL
 
                 if (query.IsDeleted != null)
                 {
-                    parameters.Add(nameof(query.IsDeleted), query.IsDeleted, DbType.DateTime);
+                    parameters.Add(nameof(query.IsDeleted), query.IsDeleted, DbType.Boolean);
                     sql += $@" AND {nameof(User.IsDeleted)} = @{nameof(query.IsDeleted)}";
                 }
 
@@ -98,6 +101,12 @@ namespace AgerDevice.DataAccess.MySQL
                 {
                     parameters.Add(nameof(query.LastConnected), query.LastConnected, DbType.DateTime);
                     sql += $@" AND {nameof(User.LastConnected)} = @{nameof(query.LastConnected)}";
+                }
+
+                if (query.PublicIP != null)
+                {
+                    parameters.Add(nameof(query.PublicIP), query.PublicIP, DbType.String);
+                    sql += $@" AND {nameof(User.PublicIP)} = @{nameof(query.PublicIP)}";
                 }
 
                 Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Users");
@@ -129,7 +138,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.SerialNumber)} = @{nameof(User.SerialNumber)},
                     {nameof(User.Modified)} = @{nameof(User.Modified)},
                     {nameof(User.IsDeleted)} = @{nameof(User.IsDeleted)},
-                    {nameof(User.LastConnected)} = @{nameof(User.LastConnected)}
+                    {nameof(User.LastConnected)} = @{nameof(User.LastConnected)},
+                    {nameof(User.PublicIP)} = @{nameof(User.PublicIP)}
                     WHERE {nameof(User.Id)} = @{nameof(User.Id)}",
                 record);
             }
