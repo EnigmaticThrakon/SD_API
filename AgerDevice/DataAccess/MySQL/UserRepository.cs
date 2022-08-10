@@ -29,7 +29,7 @@ namespace AgerDevice.DataAccess.MySQL
                 (
                     {nameof(User.Id)},
                     {nameof(User.Modified)},
-                    {nameof(User.DeviceId)},
+                    {nameof(User.SerialNumber)},
                     {nameof(User.IsDeleted)},
                     {nameof(User.LastConnected)}
                 ) 
@@ -37,7 +37,7 @@ namespace AgerDevice.DataAccess.MySQL
                 (
                     @{nameof(User.Id)},
                     @{nameof(User.Modified)},
-                    @{nameof(User.DeviceId)},
+                    @{nameof(User.SerialNumber)},
                     @{nameof(User.IsDeleted)},
                     @{nameof(User.LastConnected)}
                 )", user);
@@ -64,7 +64,7 @@ namespace AgerDevice.DataAccess.MySQL
                 string sql = $@"SELECT
                 u.{nameof(User.Id)},
                 u.{nameof(User.LastConnected)},
-                u.{nameof(User.DeviceId)},
+                u.{nameof(User.SerialNumber)},
                 u.{nameof(User.Modified)},
                 u.{nameof(User.IsDeleted)}
                 FROM Users u
@@ -76,10 +76,10 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $@" AND {nameof(User.Id)} = @{nameof(query.Id)}";
                 }
 
-                if (query.DeviceId != null)
+                if (query.SerialNumber != null)
                 {
-                    parameters.Add(nameof(query.DeviceId), query.DeviceId, DbType.String);
-                    sql += $@" AND {nameof(User.DeviceId)} = @{nameof(query.DeviceId)}";
+                    parameters.Add(nameof(query.SerialNumber), query.SerialNumber, DbType.String);
+                    sql += $@" AND {nameof(User.SerialNumber)} = @{nameof(query.SerialNumber)}";
                 }
 
                 if (query.Modified != null)
@@ -126,7 +126,7 @@ namespace AgerDevice.DataAccess.MySQL
             using(IDbConnection connection = _connectionFactory())
             {
                 await connection.ExecuteAsync($@"UPDATE Users SET
-                    {nameof(User.DeviceId)} = @{nameof(User.DeviceId)},
+                    {nameof(User.SerialNumber)} = @{nameof(User.SerialNumber)},
                     {nameof(User.Modified)} = @{nameof(User.Modified)},
                     {nameof(User.IsDeleted)} = @{nameof(User.IsDeleted)},
                     {nameof(User.LastConnected)} = @{nameof(User.LastConnected)}
