@@ -8,6 +8,7 @@ namespace AgerDevice.Core.Query
         public DateTime? Modified { get; set; }
         public string? SerialNumber { get; set; }
         public bool? IsDeleted { get; set; }
+        public string? PublicIP { get; set; }
 
         public UnitQuery()
         {
@@ -15,6 +16,7 @@ namespace AgerDevice.Core.Query
             Modified = null;
             SerialNumber = null;
             IsDeleted = null;
+            PublicIP = null;
         }
 
         public enum SortColumns
