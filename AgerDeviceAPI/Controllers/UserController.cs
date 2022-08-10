@@ -26,8 +26,8 @@ namespace AgerDeviceAPI.Controllers
         /// <param name="deviceId"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("Connect")]
-        public async Task<ActionResult<string>> GetUserId(ConnectedDeviceViewModel model)
+        [Route("UserData")]
+        public async Task<ActionResult<string>> IncomingUser(ConnectedDeviceViewModel model)
         {
             PagedResult<User> results = await _userManager.QueryAsync(new UserQuery() { SerialNumber = model.SerialNumber });
 
