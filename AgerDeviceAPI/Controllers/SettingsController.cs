@@ -20,6 +20,12 @@ namespace AgerDeviceAPI.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Endpoint to update users name
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="username"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("${id}/${userName}")]
         public async Task<ActionResult<string>> UpdateUserName(Guid id, string userName)
