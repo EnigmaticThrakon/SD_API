@@ -3,18 +3,18 @@
 namespace AgerDevice.DataAccess.Migrations
 {
     [Migration(202208062300)]
-    public class AddedUnitUserLinkTable : Migration
+    public class AddedUnitGroupLinkTable : Migration
     {
         public override void Up()
         {
-            Create.Table("UnitUserLink")
+            Create.Table("UnitGroupLink")
                 .WithColumn("UnitId").AsGuid().PrimaryKey().NotNullable()
-                .WithColumn("UserId").AsGuid().NotNullable();
+                .WithColumn("GroupId").AsGuid().NotNullable();
         }
 
         public override void Down()
         {
-            Delete.Table("UnitUserLink");
+            Delete.Table("UnitGroupLink");
         }
     }
 }
