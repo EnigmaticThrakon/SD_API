@@ -33,7 +33,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.IsDeleted)},
                     {nameof(User.LastConnected)},
                     {nameof(User.PublicIP)},
-                    {nameof(User.GroupId)}
+                    {nameof(User.GroupId)},
+                    {nameof(User.UserName)}
                 ) 
                 VALUES 
                 (
@@ -43,7 +44,8 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(User.IsDeleted)},
                     @{nameof(User.LastConnected)},
                     @{nameof(User.PublicIP)},
-                    @{nameof(User.GroupId)}
+                    @{nameof(User.GroupId)},
+                    @{nameof(User.UserName)}
                 )", user);
             }
         }
@@ -72,7 +74,8 @@ namespace AgerDevice.DataAccess.MySQL
                 u.{nameof(User.Modified)},
                 u.{nameof(User.IsDeleted)},
                 u.{nameof(User.PublicIP)},
-                u.{nameof(User.GroupId)}
+                u.{nameof(User.GroupId)},
+                u.{nameof(User.UserName)}
                 FROM Users u
                 WHERE 1=1 ";
 
@@ -118,6 +121,12 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $@" AND {nameof(User.GroupId)} = @{nameof(query.GroupId)}";
                 }
 
+                if (query.UserName != null)
+                {
+                    parameters.Add(nameof(query.UserName), query.UserName, DbType.String);
+                    sql += $@" AND {nameof(User.UserName)} = @{nameof(query.UserName)}";
+                }
+
                 Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Users");
                 Task<int> filteredRecords = connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM ({sql}) AS Results", parameters);
 
@@ -149,7 +158,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.IsDeleted)} = @{nameof(User.IsDeleted)},
                     {nameof(User.LastConnected)} = @{nameof(User.LastConnected)},
                     {nameof(User.PublicIP)} = @{nameof(User.PublicIP)},
-                    {nameof(User.GroupId)} = @{nameof(User.GroupId)}
+                    {nameof(User.GroupId)} = @{nameof(User.GroupId)},
+                    {nameof(User.UserName)} = @{nameof(User.UserName)}
                     WHERE {nameof(User.Id)} = @{nameof(User.Id)}",
                 record);
             }
