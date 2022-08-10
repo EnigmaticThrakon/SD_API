@@ -7,7 +7,7 @@ To be run on the intermediate server that the device will connect to and the use
 
 ***Note:***
 
-    This project is primarily configured to run in a Linux environment and it is unknown if it will successfully run on Windows or MacOS
+**This project is primarily configured to run in a Linux environment and it is unknown if it will successfully run on Windows or MacOS**
 
 *Currently the development environment is a remote computer running `Ubuntu 20.04.4 LTS Desktop`*
 
@@ -57,7 +57,7 @@ To be run on the intermediate server that the device will connect to and the use
 
 ***Note:*** 
 
-    At this point the server can be reached from other devices that are within the same network, if it is to be accessed from outside the network then a dynamic DNS service should be used to gain access to the server's public IP and router port forwarding used to expose the necessary port to the outside
+**At this point the server can be reached from other devices that are within the same network, if it is to be accessed from outside the network then a dynamic DNS service should be used to gain access to the server's public IP and router port forwarding used to expose the necessary port to the outside**
 
 ***
 
