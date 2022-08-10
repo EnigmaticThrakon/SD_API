@@ -15,6 +15,7 @@ namespace AgerDevice.Core.Models
         public DateTime? LastConnected { get; set; }
         public string? PublicIP { get; set; }
         public Guid GroupId { get; set; }
+        public string? UserName { get; set; }
 
         public User() { }
     }

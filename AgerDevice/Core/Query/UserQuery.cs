@@ -11,6 +11,7 @@ namespace AgerDevice.Core.Query
         public DateTime? LastConnected { get; set; }
         public string? PublicIP { get; set; }
         public Guid? GroupId { get; set; }
+        public string? UserName { get; set; }
 
         public UserQuery()
         {
@@ -21,6 +22,7 @@ namespace AgerDevice.Core.Query
             LastConnected = null;
             PublicIP = null;
             GroupId = null;
+            UserName = null;    
         }
 
         public enum SortColumns
