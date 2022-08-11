@@ -9,11 +9,13 @@ using AgerDevice.Managers;
 using Microsoft.AspNetCore.Http.Features;
 using AgerDevice.Core.Query;
 using AgerDevice.Core.Models;
+using System.Collections.Concurrent;
 
 namespace AgerDevice.Hubs
 {
     public class DeviceHub : Hub
     {
+        private ConcurrentDictionary<Guid, string> _deviceConnectionHandler;
         private readonly AcquisitionService _acquisitionService;
         // private readonly UserManager _userManager;
         private readonly UnitManager _unitManager;
@@ -23,6 +25,7 @@ namespace AgerDevice.Hubs
             _acquisitionService = acquisitionService;
             // _userManager = userManager;
             _unitManager = unitManager;
+            _deviceConnectionHandler = new ConcurrentDictionary<Guid, string>();
         }
 
         public async override Task OnConnectedAsync()
@@ -53,12 +56,26 @@ namespace AgerDevice.Hubs
             currentUnit.Modified = DateTime.Now;
 
             await _unitManager.UpdateAsync(currentUnit);
+            _deviceConnectionHandler.AddOrUpdate(currentUnit.Id, Context.ConnectionId, (key, oldValue) => Context.ConnectionId);
 
             await base.OnConnectedAsync();
         }
 
         public async override Task OnDisconnectedAsync(Exception ex)
         {
+            Guid unitId = _deviceConnectionHandler.Keys.Where(t => {
+                string? connectionId;
+                _deviceConnectionHandler.TryGetValue(t, out connectionId);
+
+                return connectionId == Context.ConnectionId;
+            }).FirstOrDefault();
+
+            if(unitId != null) 
+            {
+                string temp;
+                _deviceConnectionHandler.Remove(unitId, out temp);
+            }
+            
             await base.OnDisconnectedAsync(ex);
         }
 
