@@ -14,12 +14,14 @@ namespace AgerDeviceAPI.Controllers
         private readonly ILogger _logger;
         private readonly UnitManager _unitManager;
         private readonly UserManager _userManager;
+        private readonly LinkManager _linkManager;
 
-        public UnitController(ILogger<UsersController> logger, UnitManager unitManager, UserManager userManager)
+        public UnitController(ILogger<UsersController> logger, UnitManager unitManager, UserManager userManager, LinkManager linkManager)
         {
             _logger = logger;
             _unitManager = unitManager;
             _userManager = userManager;
+            _linkManager = linkManager;
         }
 
         /// <summary>
@@ -54,10 +56,24 @@ namespace AgerDeviceAPI.Controllers
             }
 
             PagedResult<Unit> unitResults = await _unitManager.QueryAsync(new UnitQuery() { IsDeleted = false, PublicIP = currentUser.PublicIP });
+            PagedResult<Link> linkResults = await _linkManager.QueryAsync();
 
             if(unitResults.FilteredCount > 0)
             {
-                //Need to add logic to filter out units already associated with current user group id and returns remaining available units with that IP
+                List<Guid> takenUnitGuids = new List<Guid>();
+
+                if(linkResults.FilteredCount > 0)
+                {
+                    takenUnitGuids = linkResults.Select(t => t.Id).ToList();
+                }
+
+                List<Guid> availableGuids = new List<Guid>();
+                unitResults.Select(t => t.Id).ToList().ForEach(t => {
+                    if(!takenUnitGuids.Contains(t))
+                        availableGuids.Add(t);
+                });
+
+                return availableGuids.Select(t => t.ToString()).ToArray();
             }
             else
             {
@@ -68,8 +84,6 @@ namespace AgerDeviceAPI.Controllers
             {
                 return BadRequest(ex);
             }
-
-            return BadRequest("Problem If We Get to Here");
         }
 
         /// <summary>
