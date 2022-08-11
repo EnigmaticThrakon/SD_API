@@ -25,6 +25,7 @@ namespace AgerDevice.DependencyResolution
         {
             serviceCollection.AddSingleton<IUserRepository, DataAccess.MySQL.UserRepository>();
             serviceCollection.AddSingleton<IUnitRepository, DataAccess.MySQL.UnitRepository>();
+            serviceCollection.AddSingleton<ILinkRepository, DataAccess.MySQL.LinkRepository>();
             //serviceCollection.AddSingleton<IRepository, DataAccess.MySQL.Repository>();
 
             return serviceCollection;
@@ -34,6 +35,7 @@ namespace AgerDevice.DependencyResolution
         {
             serviceCollection.AddTransient<UserManager>();
             serviceCollection.AddTransient<UnitManager>();
+            serviceCollection.AddTransient<LinkManager>();
             //serviceCollection.AddTransient<Manager>();
 
             return serviceCollection;
