@@ -26,10 +26,10 @@ namespace AgerDeviceAPI.Controllers
         /// <param name="deviceId"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("UserData")]
-        public async Task<ActionResult<string>> IncomingUser(ConnectedDeviceViewModel model)
+        [Route("{deviceId}")]
+        public async Task<ActionResult<string>> IncomingUser(string deviceId)
         {
-            PagedResult<User> results = await _userManager.QueryAsync(new UserQuery() { SerialNumber = model.SerialNumber });
+            PagedResult<User> results = await _userManager.QueryAsync(new UserQuery() { SerialNumber = deviceId });
 
             if(results.FilteredCount > 0)
             {
@@ -44,9 +44,8 @@ namespace AgerDeviceAPI.Controllers
                 Id = Guid.NewGuid(),
                 Modified = DateTime.Now,
                 IsDeleted = false,
-                SerialNumber = model.SerialNumber,
-                LastConnected = DateTime.Now,
-                GroupId = Guid.NewGuid()
+                SerialNumber = deviceId,
+                LastConnected = DateTime.Now
             };
 
             await _userManager.CreateAsync(newUser);
