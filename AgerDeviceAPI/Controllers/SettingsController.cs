@@ -55,7 +55,7 @@ namespace AgerDeviceAPI.Controllers
         // }
 
         [HttpPut]
-        [Route("${id}")]
+        [Route("{id}")]
         public async Task<UserSettingsViewModel> GetCurrentSettings(Guid id)
         {
             try
