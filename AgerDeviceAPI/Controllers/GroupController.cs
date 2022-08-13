@@ -51,34 +51,34 @@ namespace AgerDeviceAPI.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPut]
-        [Route("update")]
-        public async Task<ActionResult<string>> UpdateUserGroup(GroupViewModel model)
-        {
-            if (model.UserId != null && model.GroupId != null)
-            {
-                try
-                {
-                    PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { IsDeleted = false, Id = model.UserId });
+        // [HttpPut]
+        // [Route("update")]
+        // public async Task<ActionResult<string>> UpdateUserGroup(GroupViewModel model)
+        // {
+        //     if (model.UserId != null && model.GroupId != null)
+        //     {
+        //         try
+        //         {
+        //             PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { IsDeleted = false, Id = model.UserId });
 
-                    if (result.FilteredCount > 0)
-                    {
-                        User currentUser = result[0];
-                        currentUser.GroupId = model.GroupId.Value;
-                        currentUser.Modified = DateTime.Now;
+        //             if (result.FilteredCount > 0)
+        //             {
+        //                 User currentUser = result[0];
+        //                 currentUser.GroupId = model.GroupId.Value;
+        //                 currentUser.Modified = DateTime.Now;
 
-                        await _userManager.UpdateAsync(currentUser);
-                        return "success";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex);
-                }
+        //                 await _userManager.UpdateAsync(currentUser);
+        //                 return "success";
+        //             }
+        //         }
+        //         catch (Exception ex)
+        //         {
+        //             return BadRequest(ex);
+        //         }
 
-            }
+        //     }
 
-            return BadRequest("Invalid User or Group ID");
-        }
+        //     return BadRequest("Invalid User or Group ID");
+        // }
     }
 }
