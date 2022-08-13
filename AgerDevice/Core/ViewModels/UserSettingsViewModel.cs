@@ -16,14 +16,14 @@ namespace AgerDevice.Core.ViewModels
 
         public UserSettingsViewModel() { }
 
-        public UserSettingsViewModel FromModel(UserSettings model) 
+        public static UserSettingsViewModel FromModel(UserSettings model) 
         {
             return new UserSettingsViewModel() {
                 Id = model.Id,
                 GroupId = model.GroupId,
                 UserName = model.UserName,
                 GroupsEnabled = model.GroupsEnabled
-            }
+            };
         }
     }
 }
