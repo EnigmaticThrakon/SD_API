@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AgerDevice.Core.Models;
 
 namespace AgerDevice.Core.ViewModels
 {
@@ -14,5 +15,15 @@ namespace AgerDevice.Core.ViewModels
         public bool? GroupsEnabled { get; set; }
 
         public UserSettingsViewModel() { }
+
+        public UserSettingsViewModel FromModel(UserSettings model) 
+        {
+            return new UserSettingsViewModel() {
+                Id = model.Id,
+                GroupId = model.GroupId,
+                UserName = model.UserName,
+                GroupsEnabled = model.GroupsEnabled
+            }
+        }
     }
 }
