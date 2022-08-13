@@ -51,5 +51,12 @@ namespace AgerDeviceAPI.Controllers
                 return BadRequest(ex);
             }
         }
+
+        [HttpGet]
+        [Route("${id}")]
+        public async Task<SettingsViewModel> GetCurrentSettings(Guid id)
+        {
+            
+        }
     }
 }
