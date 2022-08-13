@@ -8,7 +8,7 @@ namespace AgerDevice.DataAccess.Migrations
         public override void Up()
         {
             Create.Table("UserSettings")
-                .WithColumn("UserId").AsGuid().PrimaryKey().NotNullable();
+                .WithColumn("Id").AsGuid().PrimaryKey().NotNullable();
         }
 
         public override void Down()
