@@ -25,26 +25,26 @@ namespace AgerDeviceAPI.Controllers
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("members/${groupId}")]
-        public async Task<ActionResult<string[]>> GetGroupMembers(Guid groupId)
-        {
-            try
-            {
-                PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { IsDeleted = false, GroupId = groupId });
+        // [HttpGet]
+        // [Route("members/${groupId}")]
+        // public async Task<ActionResult<string[]>> GetGroupMembers(Guid groupId)
+        // {
+        //     try
+        //     {
+        //         PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { IsDeleted = false, GroupId = groupId });
 
-                if(result.FilteredCount > 0) 
-                {
-                    return Ok(result.Select(t => String.IsNullOrEmpty(t.UserName) ? t.Id.ToString() : t.UserName).ToArray());
-                }
+        //         if(result.FilteredCount > 0) 
+        //         {
+        //             return Ok(result.Select(t => String.IsNullOrEmpty(t.UserName) ? t.Id.ToString() : t.UserName).ToArray());
+        //         }
 
-                return new string[0];
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
+        //         return new string[0];
+        //     }
+        //     catch(Exception ex)
+        //     {
+        //         return BadRequest(ex);
+        //     }
+        // }
 
         /// <summary>
         /// Endpoint to alter users group id
