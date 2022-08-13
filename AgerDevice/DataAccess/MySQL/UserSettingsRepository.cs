@@ -38,8 +38,8 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(UserSettings.Id)},
                     @{nameof(UserSettings.Modified)},
                     @{nameof(UserSettings.UserName)},
-                    @{nameof(UserSettings.GroupsEnabled)},
-                    @{nameof(UserSettings.GroupId)}
+                    @{nameof(UserSettings.GroupId)},
+                    @{nameof(UserSettings.GroupsEnabled)}
                 )", userSettings);
             }
         }
@@ -75,7 +75,7 @@ namespace AgerDevice.DataAccess.MySQL
 
                 if (query.Id != null)
                 {
-                    parameters.Add(nameof(query.Id), query.Id, DbType.String);
+                    parameters.Add(nameof(query.Id), query.Id, DbType.Guid);
                     sql += $@" AND {nameof(UserSettings.Id)} = @{nameof(query.Id)}";
                 }
 
