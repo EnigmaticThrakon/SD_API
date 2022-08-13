@@ -13,11 +13,13 @@ namespace AgerDeviceAPI.Controllers
     {
         private ILogger _logger;
         private UserManager _userManager;
+        private UserSettingsManager _userSettingsManager;
 
-        public SettingsController(ILogger<SettingsController> logger, UserManager userManager)
+        public SettingsController(ILogger<SettingsController> logger, UserManager userManager, UserSettingsManager userSettingsManager)
         {
             _logger = logger;
             _userManager = userManager;
+            _userSettingsManager = userSettingsManager;
         }
 
         /// <summary>
@@ -26,37 +28,62 @@ namespace AgerDeviceAPI.Controllers
         /// <param name="id"></param>
         /// <param name="username"></param>
         /// <returns></returns>
+        // [HttpPut]
+        // [Route("${id}/${userName}")]
+        // public async Task<ActionResult<string>> UpdateUserName(Guid id, string userName)
+        // {
+        //     try
+        //     {
+        //         PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { IsDeleted = false, Id = id });
+
+        //         if(result.FilteredCount > 0)
+        //         {
+        //             User currentUser = result[0];
+        //             currentUser.UserName = userName.Length > 100 ? userName.Substring(0, 100) : userName;
+        //             currentUser.Modified = DateTime.Now;
+
+        //             await _userManager.UpdateAsync(currentUser);
+        //             return Ok("success");
+        //         }
+
+        //         return BadRequest("No User Found With That Id");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return BadRequest(ex);
+        //     }
+        // }
+
         [HttpPut]
-        [Route("${id}/${userName}")]
-        public async Task<ActionResult<string>> UpdateUserName(Guid id, string userName)
+        [Route("${id}")]
+        public async Task<UserSettingsViewModel> GetCurrentSettings(Guid id)
         {
             try
             {
-                PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { IsDeleted = false, Id = id });
+                PagedResult<UserSettings> result = await _userSettingsManager.QueryAsync(new UserSettingsQuery() { Id = id });
 
                 if(result.FilteredCount > 0)
                 {
-                    User currentUser = result[0];
-                    currentUser.UserName = userName.Length > 100 ? userName.Substring(0, 100) : userName;
-                    currentUser.Modified = DateTime.Now;
-
-                    await _userManager.UpdateAsync(currentUser);
-                    return Ok("success");
+                    return UserSettingsViewModel.FromModel(result[0]);
                 }
 
-                return BadRequest("No User Found With That Id");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
+                UserSettings newUserSettings = new UserSettings() 
+                {
+                    Id = id,
+                    Modified = DateTime.Now,
+                    GroupId = Guid.NewGuid(),
+                    GroupsEnabled = false,
+                    UserName = String.Empty
+                };
 
-        [HttpGet]
-        [Route("${id}")]
-        public async Task<SettingsViewModel> GetCurrentSettings(Guid id)
-        {
-            
+                await _userSettingsManager.CreateAsync(newUserSettings);
+
+                return UserSettingsViewModel.FromModel(newUserSettings);
+            }
+            catch(Exception ex)
+            {
+                return new UserSettingsViewModel();
+            }
         }
     }
 }
