@@ -55,6 +55,46 @@ namespace AgerDeviceAPI.Controllers
         // }
 
         [HttpPut]
+        [Route("Save")]
+        public async Task<ActionResult> SaveSettings(UserSettingsViewModel model)
+        {
+            try
+            {
+                PagedResult<UserSettings> result = await _userSettingsManager.QueryAsync(new UserSettingsQuery() { Id = model.Id });
+
+                if(result.FilteredCount > 0)
+                {
+                    UserSettings settings = result[0];
+
+                    settings.Modified = DateTime.Now;
+                    settings.GroupId = model.GroupId.HasValue ? model.GroupId.Value : settings.GroupId;
+                    settings.GroupsEnabled = model.GroupsEnabled.HasValue ? model.GroupsEnabled.Value : settings.GroupsEnabled;
+                    settings.UserName = model.UserName;
+
+                    await _userSettingsManager.UpdateAsync(settings);
+
+                    return Ok();
+                }
+
+                UserSettings newSettings = new UserSettings() {
+                    Id = model.Id.Value,
+                    GroupId = model.GroupId.HasValue ? model.GroupId.Value : Guid.NewGuid(),
+                    GroupsEnabled = model.GroupsEnabled.HasValue ? model.GroupsEnabled.Value : false,
+                    Modified = DateTime.Now,
+                    UserName = model.UserName
+                };
+
+                await _userSettingsManager.CreateAsync(newSettings);
+
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpPut]
         [Route("{id}")]
         public async Task<UserSettingsViewModel> GetCurrentSettings(Guid id)
         {
