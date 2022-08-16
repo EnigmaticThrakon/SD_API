@@ -30,9 +30,22 @@ namespace AgerDeviceAPI.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("NewUnit/Auto")]
-        public async Task<ActionResult<string[]>> AutoAddUnit(GroupViewModel model)
+        [Route("Auto")]
+        public async Task<ActionResult<List<ConnectedDeviceViewModel>>> AutoAddUnit(GroupViewModel model)
         {
+            List<ConnectedDeviceViewModel> temp = new ConnectedDeviceViewModel[2]{
+                new ConnectedDeviceViewModel() {
+                    Id = Guid.NewGuid(),
+                    PublicIP = "192.168.5.106"
+                },
+                new ConnectedDeviceViewModel() {
+                    Id = Guid.NewGuid(),
+                    PublicIP = "192.168.6.105"
+                }
+            }.ToList();
+
+            return temp;
+
             if(model.UserId == null)
                 return BadRequest("User ID Cannot Be Null");
 
@@ -73,11 +86,11 @@ namespace AgerDeviceAPI.Controllers
                         availableGuids.Add(t);
                 });
 
-                return availableGuids.Select(t => t.ToString()).ToArray();
+                // return availableGuids.Select(t => t.ToString()).ToArray();
             }
             else
             {
-                return new string[0];
+                return new List<ConnectedDeviceViewModel>();
             }
             }
             catch(Exception ex)
