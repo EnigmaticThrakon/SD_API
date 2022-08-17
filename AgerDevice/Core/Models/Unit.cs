@@ -14,6 +14,7 @@ namespace AgerDevice.Core.Models
         public bool IsDeleted { get; set; }
         public string PublicIP { get; set; }
         public bool IsConnected { get; set; }
+        public string ConnectionId { get; set; }
 
         public Unit() { }
     }

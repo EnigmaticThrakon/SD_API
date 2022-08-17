@@ -10,6 +10,7 @@ namespace AgerDevice.Core.Query
         public bool? IsDeleted { get; set; }
         public string? PublicIP { get; set; }
         public bool? IsConnected { get; set; }
+        public string? ConnectionId { get; set; }
 
         public UnitQuery()
         {
@@ -19,6 +20,7 @@ namespace AgerDevice.Core.Query
             IsDeleted = null;
             PublicIP = null;
             IsConnected = null;
+            ConnectionId = null;
         }
 
         public enum SortColumns
