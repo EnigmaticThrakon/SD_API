@@ -54,8 +54,10 @@ namespace AgerDevice.Hubs
             IHttpConnectionFeature feature = Context.Features.Get<IHttpConnectionFeature>();
             currentUnit.PublicIP = feature.RemoteIpAddress.ToString().Trim();
             currentUnit.Modified = DateTime.Now;
+            currentUnit.IsConnected = true;
 
             await _unitManager.UpdateAsync(currentUnit);
+            await _unitManager.NotifyConnectionChange(currentUnit);
             _deviceConnectionHandler.AddOrUpdate(currentUnit.Id, Context.ConnectionId, (key, oldValue) => Context.ConnectionId);
 
             await base.OnConnectedAsync();
@@ -74,6 +76,30 @@ namespace AgerDevice.Hubs
             {
                 string temp;
                 _deviceConnectionHandler.Remove(unitId, out temp);
+
+                try
+                {
+                    PagedResult<Unit> result = await _unitManager.QueryAsync(new Core.Query.UnitQuery() { Id = unitId });
+
+                    if (result.FilteredCount > 0)
+                    {
+                        Unit currentUnit = result[0];
+                        currentUnit.Modified = DateTime.Now;
+                        currentUnit.IsConnected = false;
+
+                        await _unitManager.UpdateAsync(currentUnit);
+                        await _unitManager.NotifyConnectionChange(currentUnit);
+                    }
+                    else
+                    {
+                        throw new Exception("No Units Found with ID: " + unitId);
+                    }
+                }
+                catch (Exception innerEx)
+                {
+                    Console.Write(innerEx.Message);
+                    throw new Exception();
+                }
             }
             
             await base.OnDisconnectedAsync(ex);
