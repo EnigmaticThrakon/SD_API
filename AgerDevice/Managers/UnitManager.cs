@@ -6,16 +6,20 @@ using System.Threading.Tasks;
 using AgerDevice.Core.Models;
 using AgerDevice.Core.Query;
 using AgerDevice.Core.Repositories;
+using AgerDevice.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace AgerDevice.Managers
 {
     public class UnitManager
     {
         private readonly IUnitRepository _unitRepository;
+        private readonly IHubContext<MonitorHub> _monitorHub;
 
-        public UnitManager(IUnitRepository unitRepository)
+        public UnitManager(IUnitRepository unitRepository, IHubContext<MonitorHub> monitorHub)
         {
             _unitRepository = unitRepository;
+            _monitorHub = monitorHub;
         }
 
         public async Task CreateAsync(Unit unit)
@@ -42,6 +46,11 @@ namespace AgerDevice.Managers
         {
             unit.IsDeleted = true;
             await _unitRepository.UpdateAsync(unit);
+        }
+
+        public async Task NotifyConnectionChange(Unit unit)
+        {
+            await _monitorHub.Clients.All.SendAsync("newConnection", unit);
         }
     }
 }
