@@ -12,6 +12,7 @@ namespace AgerDevice.Core.ViewModels
         public string? SerialNumber { get; set; }
         public string? PublicIP { get; set; }
         public bool? IsConnected { get; set; }
+        public Guid? PairedId { get; set; }
 
         public ConnectedDeviceViewModel() { }
     }
