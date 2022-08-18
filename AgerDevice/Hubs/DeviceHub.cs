@@ -54,45 +54,47 @@ namespace AgerDevice.Hubs
             IHttpConnectionFeature feature = Context.Features.Get<IHttpConnectionFeature>();
             currentUnit.PublicIP = feature.RemoteIpAddress.ToString().Trim();
             currentUnit.Modified = DateTime.Now;
+            currentUnit.ConnectionId = Context.ConnectionId;
             currentUnit.IsConnected = true;
 
             await _unitManager.UpdateAsync(currentUnit);
             await _unitManager.NotifyConnectionChange(currentUnit);
-            _deviceConnectionHandler.AddOrUpdate(currentUnit.Id, Context.ConnectionId, (key, oldValue) => Context.ConnectionId);
+            // _deviceConnectionHandler.AddOrUpdate(currentUnit.Id, Context.ConnectionId, (key, oldValue) => Context.ConnectionId);
 
             await base.OnConnectedAsync();
         }
 
         public async override Task OnDisconnectedAsync(Exception ex)
         {
-            Guid unitId = _deviceConnectionHandler.Keys.Where(t => {
-                string? connectionId;
-                _deviceConnectionHandler.TryGetValue(t, out connectionId);
+            // Guid unitId = _deviceConnectionHandler.Keys.Where(t => {
+            //     string? connectionId;
+            //     _deviceConnectionHandler.TryGetValue(t, out connectionId);
 
-                return connectionId == Context.ConnectionId;
-            }).FirstOrDefault();
+            //     return connectionId == Context.ConnectionId;
+            // }).FirstOrDefault();
 
-            if(unitId != null) 
-            {
-                string temp;
-                _deviceConnectionHandler.Remove(unitId, out temp);
+            // if(unitId != Guid.Empty) 
+            // {
+                // string temp;
+                // _deviceConnectionHandler.Remove(unitId, out temp);
 
                 try
                 {
-                    PagedResult<Unit> result = await _unitManager.QueryAsync(new Core.Query.UnitQuery() { Id = unitId });
+                    PagedResult<Unit> result = await _unitManager.QueryAsync(new Core.Query.UnitQuery() { ConnectionId = Context.ConnectionId });
 
                     if (result.FilteredCount > 0)
                     {
                         Unit currentUnit = result[0];
                         currentUnit.Modified = DateTime.Now;
                         currentUnit.IsConnected = false;
+                        currentUnit.ConnectionId = null;
 
                         await _unitManager.UpdateAsync(currentUnit);
                         await _unitManager.NotifyConnectionChange(currentUnit);
                     }
                     else
                     {
-                        throw new Exception("No Units Found with ID: " + unitId);
+                        throw new Exception("No Units Found with Connection ID: " + Context.ConnectionId);
                     }
                 }
                 catch (Exception innerEx)
@@ -100,7 +102,7 @@ namespace AgerDevice.Hubs
                     Console.Write(innerEx.Message);
                     throw new Exception();
                 }
-            }
+            // }
             
             await base.OnDisconnectedAsync(ex);
         }
