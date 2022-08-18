@@ -27,7 +27,7 @@ namespace AgerDeviceAPI.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("{deviceId}")]
-        public async Task<ActionResult<string>> IncomingUser(string deviceId)
+        public async Task<ActionResult<UserViewModel>> IncomingUser(string deviceId)
         {
             PagedResult<User> results = await _userManager.QueryAsync(new UserQuery() { SerialNumber = deviceId });
 
@@ -37,7 +37,7 @@ namespace AgerDeviceAPI.Controllers
                 returningUser.LastConnected = DateTime.Now;
 
                 await _userManager.UpdateAsync(returningUser);
-                return returningUser.Id.ToString();
+                return new UserViewModel() { Id = returningUser.Id, PublicIP = returningUser.PublicIP };
             }
 
             User newUser = new User() {
@@ -50,7 +50,7 @@ namespace AgerDeviceAPI.Controllers
 
             await _userManager.CreateAsync(newUser);
 
-            return newUser.Id.ToString();
+            return new UserViewModel() { Id = newUser.Id, PublicIP = newUser.PublicIP };
         }
     }
 }
