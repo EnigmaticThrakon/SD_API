@@ -25,8 +25,8 @@ namespace AgerDevice.Hubs
             User currentUser;
             try 
             {
-                Guid userId = Guid.Parse(Context.GetHttpContext().Request.Query["user"]);
-                PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { Id = userId });
+                string deviceId = Context.GetHttpContext().Request.Query["deviceId"];
+                PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { SerialNumber = deviceId});
 
                 if(result.FilteredCount > 0) 
                 {
@@ -34,7 +34,7 @@ namespace AgerDevice.Hubs
                 }
                 else
                 {
-                    throw new Exception("No Units Found with ID: " + userId);
+                    throw new Exception("No Units Found with Device ID: " + deviceId);
                 }
             }
             catch(Exception ex)
