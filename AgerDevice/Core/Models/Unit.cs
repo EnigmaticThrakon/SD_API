@@ -15,6 +15,7 @@ namespace AgerDevice.Core.Models
         public string PublicIP { get; set; }
         public bool IsConnected { get; set; }
         public string ConnectionId { get; set; }
+        public Guid PairedId { get; set; }
 
         public Unit() { }
     }
