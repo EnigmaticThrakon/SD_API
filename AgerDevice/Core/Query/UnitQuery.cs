@@ -12,6 +12,7 @@ namespace AgerDevice.Core.Query
         public bool? IsConnected { get; set; }
         public string? ConnectionId { get; set; }
         public Guid? PairedId { get; set; }
+        public string? Name { get; set; }
 
         public UnitQuery()
         {
@@ -23,6 +24,7 @@ namespace AgerDevice.Core.Query
             IsConnected = null;
             ConnectionId = null;
             PairedId = null;
+            Name = null;
         }
 
         public enum SortColumns
