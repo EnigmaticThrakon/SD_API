@@ -22,6 +22,57 @@ namespace AgerDeviceAPI.Controllers
             _userManager = userManager;
         }
 
+        [HttpPut]
+        [Route("Unlink")]
+        public async Task<ActionResult<bool>> UnlinkUnit(ConnectedDeviceViewModel model) 
+        {
+            PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id });
+
+            if(units.FilteredCount > 0)
+            {
+                units[0].PairedId = Guid.Empty;
+                units[0].Modified = DateTime.Now;
+                units[0].Name = null;
+
+                await _unitManager.UpdateAsync(units[0]);
+                await _unitManager.NotifyUnitUnlinked(units[0]);
+
+                return true;
+            }
+
+            return false;
+        }
+
+
+        /// <summary></summary>
+        /// Endpoint to link unit to user
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("Link")]
+        public async Task<ActionResult<bool>> LinkUnit(ConnectedDeviceViewModel model)
+        {
+            PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id, IsConnected = true });
+
+            if(units.FilteredCount > 0 && model.PairedId.HasValue)
+            {
+                units[0].PairedId = model.PairedId.Value;
+                units[0].Modified = DateTime.Now;
+
+                await _unitManager.UpdateAsync(units[0]);
+                await _unitManager.NotifyUnitLinked(units[0]);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Endpoint to get the units that are currently linked with the user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<List<ConnectedDeviceViewModel>>> GetUserUnits(Guid id)
@@ -30,12 +81,16 @@ namespace AgerDeviceAPI.Controllers
             List<ConnectedDeviceViewModel> response = new List<ConnectedDeviceViewModel>();
 
             for(int i = 0; i < units.FilteredCount; i++) {
-                response.Add(new ConnectedDeviceViewModel() {
-                    IsConnected = units[i].IsConnected,
-                    PublicIP = units[i].PublicIP,
-                    SerialNumber = units[i].SerialNumber,
-                    Id = units[i].Id
-                });
+                if(units[i].PairedId == id) {
+                    response.Add(new ConnectedDeviceViewModel() {
+                        IsConnected = units[i].IsConnected,
+                        PublicIP = units[i].PublicIP,
+                        SerialNumber = units[i].SerialNumber,
+                        Id = units[i].Id,
+                        PairedId = units[i].PairedId,
+                        Name = units[i].Name
+                    });
+                }
             }
 
             return response;
@@ -50,18 +105,18 @@ namespace AgerDeviceAPI.Controllers
         [Route("Auto")]
         public async Task<ActionResult<List<ConnectedDeviceViewModel>>> AutoAddUnit(GroupViewModel model)
         {
-            List<ConnectedDeviceViewModel> temp = new ConnectedDeviceViewModel[2]{
-                new ConnectedDeviceViewModel() {
-                    Id = Guid.NewGuid(),
-                    PublicIP = "192.168.5.106"
-                },
-                new ConnectedDeviceViewModel() {
-                    Id = Guid.NewGuid(),
-                    PublicIP = "192.168.6.105"
-                }
-            }.ToList();
+            // List<ConnectedDeviceViewModel> temp = new ConnectedDeviceViewModel[2]{
+            //     new ConnectedDeviceViewModel() {
+            //         Id = Guid.NewGuid(),
+            //         PublicIP = "192.168.5.106"
+            //     },
+            //     new ConnectedDeviceViewModel() {
+            //         Id = Guid.NewGuid(),
+            //         PublicIP = "192.168.6.105"
+            //     }
+            // }.ToList();
 
-            return temp;
+            // return temp;
 
             if(model.UserId == null)
                 return BadRequest("User ID Cannot Be Null");
@@ -89,7 +144,7 @@ namespace AgerDeviceAPI.Controllers
 
             if(unitResults.FilteredCount > 0)
             {
-                List<Unit> availableUnits = unitResults.Where(t => t.PairedId == null).ToList();
+                List<Unit> availableUnits = unitResults.Where(t => t.PairedId == Guid.Empty || t.PairedId == null).ToList();
                 List<ConnectedDeviceViewModel> availableDevices = new List<ConnectedDeviceViewModel>();
 
                 availableUnits.ForEach(unit => {
@@ -98,16 +153,18 @@ namespace AgerDeviceAPI.Controllers
                         PublicIP = unit.PublicIP,
                         PairedId = unit.PairedId,
                         IsConnected = unit.IsConnected,
-                        SerialNumber = unit.SerialNumber
+                        SerialNumber = unit.SerialNumber,
+                        Name = unit.Name
                     });
                 });
 
+                availableDevices.Insert(0, new ConnectedDeviceViewModel() { Id = Guid.Empty });
                 return availableDevices;
                 // return availableGuids.Select(t => t.ToString()).ToArray();
             }
             else
             {
-                return new List<ConnectedDeviceViewModel>();
+                return new List<ConnectedDeviceViewModel>() { new ConnectedDeviceViewModel() { Id = Guid.Empty } };
             }
             }
             catch(Exception ex)
