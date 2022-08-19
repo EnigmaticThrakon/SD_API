@@ -52,5 +52,15 @@ namespace AgerDevice.Managers
         {
             await _monitorHub.Clients.All.SendAsync("newConnection", unit);
         }
+
+        public async Task NotifyUnitLinked(Unit unit)
+        {
+            await _monitorHub.Clients.All.SendAsync("unitLinked", unit);
+        }
+
+        public async Task NotifyUnitUnlinked(Unit unit)
+        {
+            await _monitorHub.Clients.All.SendAsync("unitUnlinked", unit);
+        }
     }
 }
