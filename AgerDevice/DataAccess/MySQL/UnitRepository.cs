@@ -34,7 +34,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(Unit.PublicIP)},
                     {nameof(Unit.IsConnected)},
                     {nameof(Unit.ConnectionId)},
-                    {nameof(Unit.PairedId)}
+                    {nameof(Unit.PairedId)},
+                    {nameof(Unit.Name)}
                 ) 
                 VALUES 
                 (
@@ -45,7 +46,8 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(Unit.PublicIP)},
                     @{nameof(Unit.IsConnected)},
                     @{nameof(Unit.ConnectionId)},
-                    @{nameof(Unit.PairedId)}
+                    @{nameof(Unit.PairedId)},
+                    @{nameof(Unit.Name)}
                 )", unit);
             }
         }
@@ -75,7 +77,8 @@ namespace AgerDevice.DataAccess.MySQL
                 u.{nameof(Unit.PublicIP)},
                 u.{nameof(Unit.IsConnected)},
                 u.{nameof(Unit.ConnectionId)},
-                u.{nameof(Unit.PairedId)}
+                u.{nameof(Unit.PairedId)},
+                u.{nameof(Unit.Name)}
                 FROM Units u
                 WHERE 1=1 ";
 
@@ -127,6 +130,12 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $@" AND {nameof(Unit.PairedId)} = @{nameof(query.PairedId)}";
                 }
 
+                if (query.Name != null)
+                {
+                    parameters.Add(nameof(query.Name), query.Name, DbType.String);
+                    sql += $@" AND {nameof(Unit.Name)} = @{nameof(query.Name)}";
+                }
+
                 Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Units");
                 Task<int> filteredRecords = connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM ({sql}) AS Results", parameters);
 
@@ -159,7 +168,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(Unit.PublicIP)} = @{nameof(Unit.PublicIP)},
                     {nameof(Unit.IsConnected)} = @{nameof(Unit.IsConnected)},
                     {nameof(Unit.ConnectionId)} = @{nameof(Unit.ConnectionId)},
-                    {nameof(Unit.PairedId)} = @{nameof(Unit.PairedId)}
+                    {nameof(Unit.PairedId)} = @{nameof(Unit.PairedId)},
+                    {nameof(Unit.Name)} = @{nameof(Unit.Name)}
                     WHERE {nameof(Unit.Id)} = @{nameof(Unit.Id)}",
                 record);
             }
