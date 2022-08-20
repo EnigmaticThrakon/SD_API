@@ -14,6 +14,9 @@ namespace AgerDevice.Core.Models
         public string UserName { get; set; }
         public bool GroupsEnabled { get; set; }
 
-        public UserSettings() { }
+        public UserSettings() 
+        { 
+            UserName = String.Empty;
+        }
     }
 }

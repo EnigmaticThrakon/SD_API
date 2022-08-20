@@ -87,7 +87,7 @@ namespace AgerDevice.Hubs
                         Unit currentUnit = result[0];
                         currentUnit.Modified = DateTime.Now;
                         currentUnit.IsConnected = false;
-                        currentUnit.ConnectionId = null;
+                        currentUnit.ConnectionId = String.Empty;
 
                         await _unitManager.UpdateAsync(currentUnit);
                         await _unitManager.NotifyConnectionChange(currentUnit);
@@ -110,10 +110,6 @@ namespace AgerDevice.Hubs
         public async Task SendMessage(string connectionId, string message)
         {
             await Clients.Client(connectionId).SendAsync("SendSignal", Context.ConnectionId, message);
-        }
-
-        public async Task test(string message) {
-            return;
         }
     }
 }

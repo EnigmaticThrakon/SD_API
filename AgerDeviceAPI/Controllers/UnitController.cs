@@ -209,7 +209,7 @@ namespace AgerDeviceAPI.Controllers
                 Id = Guid.NewGuid(),
                 Modified = DateTime.Now,
                 IsDeleted = false,
-                SerialNumber = model.SerialNumber
+                SerialNumber = model.SerialNumber == null ? String.Empty : model.SerialNumber
             };
 
             await _unitManager.CreateAsync(newUnit);

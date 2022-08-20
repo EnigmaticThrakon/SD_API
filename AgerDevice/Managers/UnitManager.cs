@@ -27,7 +27,7 @@ namespace AgerDevice.Managers
             await _unitRepository.CreateAsync(unit);
         }
 
-        public async Task<PagedResult<Unit>> QueryAsync(UnitQuery query = null)
+        public async Task<PagedResult<Unit>> QueryAsync(UnitQuery? query = null)
         {
             return await _unitRepository.QueryAsync(query);
         }
@@ -37,10 +37,10 @@ namespace AgerDevice.Managers
             await _unitRepository.UpdateAsync(unit);
         }
 
-        public async Task DeleteAsync(Guid userId)
-        {
-            await _unitRepository.DeleteAsync(userId);
-        }
+        // public async Task DeleteAsync(Guid userId)
+        // {
+        //     await _unitRepository.Delete(userId);
+        // }
 
         public async Task MarkDeleted(Unit unit)
         {

@@ -69,7 +69,7 @@ namespace AgerDeviceAPI.Controllers
                     settings.Modified = DateTime.Now;
                     settings.GroupId = model.GroupId.HasValue ? model.GroupId.Value : settings.GroupId;
                     settings.GroupsEnabled = model.GroupsEnabled.HasValue ? model.GroupsEnabled.Value : settings.GroupsEnabled;
-                    settings.UserName = model.UserName;
+                    settings.UserName = model.UserName == null ? String.Empty : model.UserName;
 
                     await _userSettingsManager.UpdateAsync(settings);
 
@@ -77,11 +77,11 @@ namespace AgerDeviceAPI.Controllers
                 }
 
                 UserSettings newSettings = new UserSettings() {
-                    Id = model.Id.Value,
+                    Id = model.Id.HasValue ? model.Id.Value : Guid.Empty,
                     GroupId = model.GroupId.HasValue ? model.GroupId.Value : Guid.NewGuid(),
                     GroupsEnabled = model.GroupsEnabled.HasValue ? model.GroupsEnabled.Value : false,
                     Modified = DateTime.Now,
-                    UserName = model.UserName
+                    UserName = model.UserName == null ? String.Empty : model.UserName
                 };
 
                 await _userSettingsManager.CreateAsync(newSettings);
@@ -122,6 +122,7 @@ namespace AgerDeviceAPI.Controllers
             }
             catch(Exception ex)
             {
+                _logger.LogError(exception: ex, message: null);
                 return new UserSettingsViewModel();
             }
         }

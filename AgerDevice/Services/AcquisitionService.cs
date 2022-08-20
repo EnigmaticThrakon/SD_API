@@ -19,8 +19,14 @@ namespace AgerDevice.Services
 
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken) { }
+        public async Task StartAsync(CancellationToken cancellationToken) 
+        { 
+            await Task.Run(() => { Console.WriteLine("Dumb Placeholder"); });
+        }
 
-        public async Task StopAsync(CancellationToken cancellationToken) { }
+        public async Task StopAsync(CancellationToken cancellationToken) 
+        {
+            await Task.Run(() => { Console.WriteLine("Dumb Placeholder"); });
+        }
     }
 }

@@ -52,12 +52,12 @@ namespace AgerDevice.DataAccess.MySQL
             }
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task Delete(Guid id)
         {
-            return;
+            await Task.Run(() => { Console.WriteLine("Dumb Placeholder"); });
         }
 
-        public async Task<PagedResult<Unit>> QueryAsync(UnitQuery query = null)
+        public async Task<PagedResult<Unit>> QueryAsync(UnitQuery? query = null)
         {
             using (IDbConnection connection = _connectionFactory())
             {

@@ -23,7 +23,7 @@ namespace AgerDevice.Managers
             await _userSettingsRepository.CreateAsync(userSettings);
         }
 
-        public async Task<PagedResult<UserSettings>> QueryAsync(UserSettingsQuery query = null)
+        public async Task<PagedResult<UserSettings>> QueryAsync(UserSettingsQuery? query = null)
         {
             return await _userSettingsRepository.QueryAsync(query);
         }
@@ -33,9 +33,9 @@ namespace AgerDevice.Managers
             await _userSettingsRepository.UpdateAsync(userSettings);
         }
 
-        public async Task DeleteAsync(Guid userId)
-        {
-            await _userSettingsRepository.DeleteAsync(userId);
-        }
+        // public async Task DeleteAsync(Guid userId)
+        // {
+        //     await _userSettingsRepository.Delete(userId);
+        // }
     }
 }

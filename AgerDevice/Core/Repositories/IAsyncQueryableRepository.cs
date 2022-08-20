@@ -5,6 +5,6 @@ namespace AgerDevice.Core.Repositories
 {
     public interface IAsyncQueryableRepository<TModel, TQuery> where TQuery : BaseQuery
     {
-        public Task<PagedResult<TModel>> QueryAsync(TQuery query = null);
+        public Task<PagedResult<TModel>> QueryAsync(TQuery? query = null);
     }
 }

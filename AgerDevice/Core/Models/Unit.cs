@@ -18,6 +18,11 @@ namespace AgerDevice.Core.Models
         public Guid? PairedId { get; set; }
         public string? Name { get; set; }
 
-        public Unit() { }
+        public Unit() 
+        {
+            SerialNumber = String.Empty;
+            PublicIP = String.Empty;
+            ConnectionId = String.Empty;
+        }
     }
 }

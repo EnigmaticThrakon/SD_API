@@ -44,7 +44,7 @@ namespace AgerDevice.DataAccess.MySQL
             }
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task Delete(Guid id)
         {
             using(IDbConnection connection = _connectionFactory())
             {
@@ -52,7 +52,7 @@ namespace AgerDevice.DataAccess.MySQL
             }
         }
 
-        public async Task<PagedResult<UserSettings>> QueryAsync(UserSettingsQuery query = null)
+        public async Task<PagedResult<UserSettings>> QueryAsync(UserSettingsQuery? query = null)
         {
             using (IDbConnection connection = _connectionFactory())
             {

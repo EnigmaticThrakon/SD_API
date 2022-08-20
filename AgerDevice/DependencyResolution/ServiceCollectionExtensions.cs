@@ -44,7 +44,14 @@ namespace AgerDevice.DependencyResolution
         public static IServiceCollection AddServices(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<IHostedService, AcquisitionService>();
-            serviceCollection.AddSingleton<AcquisitionService>(t => t.GetServices<IHostedService>().Where(x => x is AcquisitionService).Cast<AcquisitionService>().SingleOrDefault());
+            serviceCollection.AddSingleton<AcquisitionService>(t =>
+            {
+                IEnumerable<IHostedService> services = t.GetServices<IHostedService>();
+                services = services.Where(x => x is AcquisitionService);
+                IEnumerable<AcquisitionService> acquisitionServices = services.Cast<AcquisitionService>();
+                AcquisitionService returnValue = acquisitionServices.Single();
+                return returnValue;
+            });
 
             return serviceCollection;
         }

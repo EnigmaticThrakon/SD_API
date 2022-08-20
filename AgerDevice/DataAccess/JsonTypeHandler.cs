@@ -34,7 +34,7 @@ namespace AgerDevice.DataAccess
             }
         }
 
-        public object Parse(Type destinationType, object value)
+        public object? Parse(Type destinationType, object value)
         {
             if (value == null)
             {
