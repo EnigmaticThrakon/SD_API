@@ -13,13 +13,11 @@ namespace AgerDeviceAPI.Controllers
     {
         private ILogger _logger;
         private UserManager _userManager;
-        private UserSettingsManager _userSettingsManager;
 
-        public SettingsController(ILogger<SettingsController> logger, UserManager userManager, UserSettingsManager userSettingsManager)
+        public SettingsController(ILogger<SettingsController> logger, UserManager userManager)
         {
             _logger = logger;
             _userManager = userManager;
-            _userSettingsManager = userSettingsManager;
         }
 
         /// <summary>
@@ -60,31 +58,19 @@ namespace AgerDeviceAPI.Controllers
         {
             try
             {
-                PagedResult<UserSettings> result = await _userSettingsManager.QueryAsync(new UserSettingsQuery() { Id = model.Id });
+                PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { Id = model.Id });
 
                 if(result.FilteredCount > 0)
                 {
-                    UserSettings settings = result[0];
+                    result[0].Modified = DateTime.Now;
+                    result[0].GroupId = model.GroupId.HasValue ? model.GroupId.Value : result[0].GroupId;
+                    result[0].GroupsEnabled = model.GroupsEnabled.HasValue ? model.GroupsEnabled.Value : result[0].GroupsEnabled;
+                    result[0].UserName = model.UserName == null ? String.Empty : model.UserName;
 
-                    settings.Modified = DateTime.Now;
-                    settings.GroupId = model.GroupId.HasValue ? model.GroupId.Value : settings.GroupId;
-                    settings.GroupsEnabled = model.GroupsEnabled.HasValue ? model.GroupsEnabled.Value : settings.GroupsEnabled;
-                    settings.UserName = model.UserName == null ? String.Empty : model.UserName;
-
-                    await _userSettingsManager.UpdateAsync(settings);
+                    await _userManager.UpdateAsync(result[0]);
 
                     return Ok();
                 }
-
-                UserSettings newSettings = new UserSettings() {
-                    Id = model.Id.HasValue ? model.Id.Value : Guid.Empty,
-                    GroupId = model.GroupId.HasValue ? model.GroupId.Value : Guid.NewGuid(),
-                    GroupsEnabled = model.GroupsEnabled.HasValue ? model.GroupsEnabled.Value : false,
-                    Modified = DateTime.Now,
-                    UserName = model.UserName == null ? String.Empty : model.UserName
-                };
-
-                await _userSettingsManager.CreateAsync(newSettings);
 
                 return Ok();
             }
@@ -100,31 +86,19 @@ namespace AgerDeviceAPI.Controllers
         {
             try
             {
-                PagedResult<UserSettings> result = await _userSettingsManager.QueryAsync(new UserSettingsQuery() { Id = id });
+                PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { Id = id });
 
                 if(result.FilteredCount > 0)
                 {
                     return UserSettingsViewModel.FromModel(result[0]);
                 }
-
-                UserSettings newUserSettings = new UserSettings() 
-                {
-                    Id = id,
-                    Modified = DateTime.Now,
-                    GroupId = Guid.NewGuid(),
-                    GroupsEnabled = false,
-                    UserName = String.Empty
-                };
-
-                await _userSettingsManager.CreateAsync(newUserSettings);
-
-                return UserSettingsViewModel.FromModel(newUserSettings);
             }
             catch(Exception ex)
             {
                 _logger.LogError(exception: ex, message: null);
-                return new UserSettingsViewModel();
             }
+
+            return new UserSettingsViewModel();
         }
     }
 }

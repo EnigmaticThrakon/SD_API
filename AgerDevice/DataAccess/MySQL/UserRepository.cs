@@ -23,7 +23,7 @@ namespace AgerDevice.DataAccess.MySQL
         {
             using (IDbConnection connection = _connectionFactory())
             {
-                connection.Open(); 
+                connection.Open();
 
                 await connection.ExecuteAsync($@"INSERT INTO Users
                 (
@@ -32,7 +32,10 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.SerialNumber)},
                     {nameof(User.IsDeleted)},
                     {nameof(User.LastConnected)},
-                    {nameof(User.PublicIP)}
+                    {nameof(User.PublicIP)},
+                    {nameof(User.UserName)},
+                    {nameof(User.GroupId)},
+                    {nameof(User.GroupsEnabled)}
                 ) 
                 VALUES 
                 (
@@ -41,14 +44,17 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(User.SerialNumber)},
                     @{nameof(User.IsDeleted)},
                     @{nameof(User.LastConnected)},
-                    @{nameof(User.PublicIP)}
+                    @{nameof(User.PublicIP)},
+                    @{nameof(User.UserName)},
+                    @{nameof(User.GroupId)},
+                    @{nameof(User.GroupsEnabled)}
                 )", user);
             }
         }
 
         public async Task Delete(Guid id)
         {
-            using(IDbConnection connection = _connectionFactory())
+            using (IDbConnection connection = _connectionFactory())
             {
                 await connection.ExecuteAsync($@"DELETE FROM Users WHERE Id = '" + id.ToString() + "';");
             }
@@ -72,13 +78,16 @@ namespace AgerDevice.DataAccess.MySQL
                 u.{nameof(User.SerialNumber)},
                 u.{nameof(User.Modified)},
                 u.{nameof(User.IsDeleted)},
-                u.{nameof(User.PublicIP)}
+                u.{nameof(User.PublicIP)},
+                u.{nameof(User.UserName)},
+                u.{nameof(User.GroupId)},
+                u.{nameof(User.GroupsEnabled)}
                 FROM Users u
                 WHERE 1=1 ";
 
                 if (query.Id != null)
                 {
-                    parameters.Add(nameof(query.Id), query.Id, DbType.String);
+                    parameters.Add(nameof(query.Id), query.Id, DbType.Guid);
                     sql += $@" AND {nameof(User.Id)} = @{nameof(query.Id)}";
                 }
 
@@ -112,6 +121,24 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $@" AND {nameof(User.PublicIP)} = @{nameof(query.PublicIP)}";
                 }
 
+                if (query.UserName != null)
+                {
+                    parameters.Add(nameof(query.UserName), query.UserName, DbType.String);
+                    sql += $@" AND {nameof(User.UserName)} = @{nameof(query.UserName)}";
+                }
+
+                if (query.GroupId != null)
+                {
+                    parameters.Add(nameof(query.GroupId), query.GroupId, DbType.Guid);
+                    sql += $@" AND {nameof(User.GroupId)} = @{nameof(query.GroupId)}";
+                }
+
+                if (query.GroupsEnabled != null)
+                {
+                    parameters.Add(nameof(query.GroupsEnabled), query.GroupsEnabled, DbType.Boolean);
+                    sql += $@" AND {nameof(User.GroupsEnabled)} = @{nameof(query.GroupsEnabled)}";
+                }
+
                 Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Users");
                 Task<int> filteredRecords = connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM ({sql}) AS Results", parameters);
 
@@ -135,14 +162,17 @@ namespace AgerDevice.DataAccess.MySQL
 
         public async Task UpdateAsync(User record)
         {
-            using(IDbConnection connection = _connectionFactory())
+            using (IDbConnection connection = _connectionFactory())
             {
                 await connection.ExecuteAsync($@"UPDATE Users SET
                     {nameof(User.SerialNumber)} = @{nameof(User.SerialNumber)},
                     {nameof(User.Modified)} = @{nameof(User.Modified)},
                     {nameof(User.IsDeleted)} = @{nameof(User.IsDeleted)},
                     {nameof(User.LastConnected)} = @{nameof(User.LastConnected)},
-                    {nameof(User.PublicIP)} = @{nameof(User.PublicIP)}
+                    {nameof(User.PublicIP)} = @{nameof(User.PublicIP)},
+                    {nameof(User.UserName)} = @{nameof(User.UserName)},
+                    {nameof(User.GroupId)} = @{nameof(User.GroupId)},
+                    {nameof(User.GroupsEnabled)} = @{nameof(User.GroupsEnabled)}
                     WHERE {nameof(User.Id)} = @{nameof(User.Id)}",
                 record);
             }

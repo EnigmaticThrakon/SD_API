@@ -16,7 +16,7 @@ namespace AgerDevice.Core.ViewModels
 
         public UserSettingsViewModel() { }
 
-        public static UserSettingsViewModel FromModel(UserSettings model) 
+        public static UserSettingsViewModel FromModel(User model) 
         {
             return new UserSettingsViewModel() {
                 Id = model.Id,

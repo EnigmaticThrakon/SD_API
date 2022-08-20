@@ -7,7 +7,7 @@ namespace AgerDevice.DataAccess
 {
     public static class DapperExtensions
     {
-        public static string? GetOrderByString<TSort>(this Query<TSort> query, Dictionary<TSort, string>? columns = null)
+        public static string? GetOrderByString<TSort>(this Query<TSort> query, Dictionary<TSort, string>? columns = null) where TSort : notnull
         {
             if (query.Sort == null)
             {
