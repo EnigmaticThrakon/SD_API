@@ -52,7 +52,7 @@ namespace AgerDeviceAPI.Controllers
         [Route("Link")]
         public async Task<ActionResult<bool>> LinkUnit(ConnectedDeviceViewModel model)
         {
-            PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id, IsConnected = true });
+            PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id });
 
             if(units.FilteredCount > 0 && model.PairedId.HasValue)
             {
@@ -77,11 +77,10 @@ namespace AgerDeviceAPI.Controllers
         [Route("{id}")]
         public async Task<ActionResult<List<ConnectedDeviceViewModel>>> GetUserUnits(Guid id)
         {
-            PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { IsDeleted = false });
+            PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { IsDeleted = false, PairedId = id });
             List<ConnectedDeviceViewModel> response = new List<ConnectedDeviceViewModel>();
 
             for(int i = 0; i < units.FilteredCount; i++) {
-                if(units[i].PairedId == id) {
                     response.Add(new ConnectedDeviceViewModel() {
                         IsConnected = units[i].IsConnected,
                         PublicIP = units[i].PublicIP,
@@ -90,10 +89,26 @@ namespace AgerDeviceAPI.Controllers
                         PairedId = units[i].PairedId,
                         Name = units[i].Name
                     });
-                }
             }
 
             return response;
+        }
+
+        [HttpPut]
+        [Route("Update")]
+        public async Task<ActionResult<bool>> UpdateUnit(ConnectedDeviceViewModel model)
+        {
+            PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id });
+
+            if(result.FilteredCount > 0) {
+                result[0].Name = model.Name;
+                result[0].Modified = DateTime.Now;
+
+                await _unitManager.UpdateAsync(result[0]);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -140,7 +155,7 @@ namespace AgerDeviceAPI.Controllers
                 return BadRequest("Public IP is Null");
             }
 
-            PagedResult<Unit> unitResults = await _unitManager.QueryAsync(new UnitQuery() { IsDeleted = false, PublicIP = currentUser.PublicIP });
+            PagedResult<Unit> unitResults = await _unitManager.QueryAsync(new UnitQuery() { IsDeleted = false, PublicIP = currentUser.PublicIP, IsConnected = true });
 
             if(unitResults.FilteredCount > 0)
             {
