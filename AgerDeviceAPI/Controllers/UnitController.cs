@@ -22,6 +22,11 @@ namespace AgerDeviceAPI.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Endpoint to remove unit from user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("Unlink")]
         public async Task<ActionResult<bool>> UnlinkUnit(ConnectedDeviceViewModel model) 
@@ -94,6 +99,11 @@ namespace AgerDeviceAPI.Controllers
             return response;
         }
 
+        /// <summary>
+        /// Endpoint to update settings for the Unit
+        /// </summary>
+        /// <params name="model"></params>
+        /// <returns></returns>
         [HttpPut]
         [Route("Update")]
         public async Task<ActionResult<bool>> UpdateUnit(ConnectedDeviceViewModel model)
