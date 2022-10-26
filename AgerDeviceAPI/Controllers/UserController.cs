@@ -26,7 +26,7 @@ namespace AgerDeviceAPI.Controllers
         /// <param name="deviceId"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("{deviceId}")]
+        [Route("Incoming/{deviceId}")]
         public async Task<ActionResult<UserViewModel>> IncomingUser(string deviceId)
         {
             PagedResult<User> results = await _userManager.QueryAsync(new UserQuery() { SerialNumber = deviceId });
@@ -59,7 +59,7 @@ namespace AgerDeviceAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("{id}")]
+        [Route("Settings/{id}")]
         public async Task<UserSettingsViewModel> GetCurrentSettings(Guid id)
         {
             try
