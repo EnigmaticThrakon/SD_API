@@ -31,10 +31,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(Unit.Modified)},
                     {nameof(Unit.SerialNumber)},
                     {nameof(Unit.IsDeleted)},
-                    {nameof(Unit.PublicIP)},
                     {nameof(Unit.IsConnected)},
                     {nameof(Unit.ConnectionId)},
-                    {nameof(Unit.PairedId)},
                     {nameof(Unit.Name)}
                 ) 
                 VALUES 
@@ -43,10 +41,8 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(Unit.Modified)},
                     @{nameof(Unit.SerialNumber)},
                     @{nameof(Unit.IsDeleted)},
-                    @{nameof(Unit.PublicIP)},
                     @{nameof(Unit.IsConnected)},
                     @{nameof(Unit.ConnectionId)},
-                    @{nameof(Unit.PairedId)},
                     @{nameof(Unit.Name)}
                 )", unit);
             }
@@ -74,10 +70,8 @@ namespace AgerDevice.DataAccess.MySQL
                 u.{nameof(Unit.SerialNumber)},
                 u.{nameof(Unit.Modified)},
                 u.{nameof(Unit.IsDeleted)},
-                u.{nameof(Unit.PublicIP)},
                 u.{nameof(Unit.IsConnected)},
                 u.{nameof(Unit.ConnectionId)},
-                u.{nameof(Unit.PairedId)},
                 u.{nameof(Unit.Name)}
                 FROM Units u
                 WHERE 1=1 ";
@@ -106,12 +100,6 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $@" AND {nameof(Unit.IsDeleted)} = @{nameof(query.IsDeleted)}";
                 }
 
-                if (query.PublicIP != null)
-                {
-                    parameters.Add(nameof(query.PublicIP), query.PublicIP, DbType.String);
-                    sql += $@" AND {nameof(Unit.PublicIP)} = @{nameof(query.PublicIP)}";
-                }
-
                 if (query.IsConnected != null)
                 {
                     parameters.Add(nameof(query.IsConnected), query.IsConnected, DbType.Boolean);
@@ -122,12 +110,6 @@ namespace AgerDevice.DataAccess.MySQL
                 {
                     parameters.Add(nameof(query.ConnectionId), query.ConnectionId, DbType.String);
                     sql += $@" AND {nameof(Unit.ConnectionId)} = @{nameof(query.ConnectionId)}";
-                }
-
-                if (query.PairedId != null)
-                {
-                    parameters.Add(nameof(query.PairedId), query.PairedId, DbType.Guid);
-                    sql += $@" AND {nameof(Unit.PairedId)} = @{nameof(query.PairedId)}";
                 }
 
                 if (query.Name != null)
@@ -165,10 +147,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(Unit.SerialNumber)} = @{nameof(Unit.SerialNumber)},
                     {nameof(Unit.Modified)} = @{nameof(Unit.Modified)},
                     {nameof(Unit.IsDeleted)} = @{nameof(Unit.IsDeleted)},
-                    {nameof(Unit.PublicIP)} = @{nameof(Unit.PublicIP)},
                     {nameof(Unit.IsConnected)} = @{nameof(Unit.IsConnected)},
                     {nameof(Unit.ConnectionId)} = @{nameof(Unit.ConnectionId)},
-                    {nameof(Unit.PairedId)} = @{nameof(Unit.PairedId)},
                     {nameof(Unit.Name)} = @{nameof(Unit.Name)}
                     WHERE {nameof(Unit.Id)} = @{nameof(Unit.Id)}",
                 record);
