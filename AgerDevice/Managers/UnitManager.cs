@@ -8,6 +8,7 @@ using AgerDevice.Core.Query;
 using AgerDevice.Core.Repositories;
 using AgerDevice.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using AgerDevice.Services;
 
 namespace AgerDevice.Managers
 {
@@ -61,6 +62,11 @@ namespace AgerDevice.Managers
         public async Task NotifyUnitUnlinked(Unit unit)
         {
             await _monitorHub.Clients.All.SendAsync("unitUnlinked", unit);
+        }
+
+        public async Task NewData(int value)
+        {
+            await _monitorHub.Clients.All.SendAsync("newValue", value);
         }
     }
 }
