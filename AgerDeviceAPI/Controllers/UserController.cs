@@ -111,5 +111,9 @@ namespace AgerDeviceAPI.Controllers
                 return BadRequest(ex);
             }
         }
+
+        #region NEEDED_FOR_DEMONSTRATION
+
+        #endregion NEEDED_FOR_DEMONSTRATION
     }
 }
