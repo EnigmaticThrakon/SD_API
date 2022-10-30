@@ -2,6 +2,7 @@
 using AgerDevice.Core.Query;
 using AgerDevice.Core.ViewModels;
 using AgerDevice.Managers;
+using AgerDevice.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,12 +15,14 @@ namespace AgerDeviceAPI.Controllers
         private readonly ILogger _logger;
         private readonly UnitManager _unitManager;
         private readonly UserManager _userManager;
+        private readonly AcquisitionService _acquisitionService;
 
-        public UnitController(ILogger<UsersController> logger, UnitManager unitManager, UserManager userManager)
+        public UnitController(ILogger<UsersController> logger, UnitManager unitManager, UserManager userManager, AcquisitionService acquisitionService)
         {
             _logger = logger;
             _unitManager = unitManager;
             _userManager = userManager;
+            _acquisitionService = acquisitionService;
         }
 
         /// <summary>
@@ -29,7 +32,7 @@ namespace AgerDeviceAPI.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("Unlink")]
-        public async Task<ActionResult<bool>> UnlinkUnit(UnitViewModel model) 
+        public async Task<ActionResult<bool>> UnlinkUnit(UnitViewModel model)
         {
             PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id });
 
@@ -100,105 +103,6 @@ namespace AgerDeviceAPI.Controllers
         }
 
         /// <summary>
-        /// Endpoint to update settings for the Unit
-        /// </summary>
-        /// <params name="model"></params>
-        /// <returns></returns>
-        [HttpPut]
-        [Route("Update")]
-        public async Task<ActionResult<bool>> UpdateUnit(UnitViewModel model)
-        {
-            PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id });
-
-            if(result.FilteredCount > 0) {
-                result[0].Name = model.Name;
-                result[0].Modified = DateTime.Now;
-
-                await _unitManager.UpdateAsync(result[0]);
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Endpoint to automatically add units to user based on public IP address
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPut]
-        [Route("Auto")]
-        public async Task<ActionResult<List<UnitViewModel>>> AutoAddUnit(GroupViewModel model)
-        {
-            // List<UnitViewModel> temp = new UnitViewModel[2]{
-            //     new UnitViewModel() {
-            //         Id = Guid.NewGuid(),
-            //         PublicIP = "192.168.5.106"
-            //     },
-            //     new UnitViewModel() {
-            //         Id = Guid.NewGuid(),
-            //         PublicIP = "192.168.6.105"
-            //     }
-            // }.ToList();
-
-            // return temp;
-
-            if(model.UserId == null)
-                return BadRequest("User ID Cannot Be Null");
-
-            try
-            {
-            PagedResult<User> userResults = await _userManager.QueryAsync(new UserQuery() { IsDeleted = false, Id = model.UserId });
-
-            User currentUser;
-            if(userResults.FilteredCount > 0)
-            {
-                currentUser = userResults[0];
-            }
-            else
-            {
-                return BadRequest("No User With That ID Found");
-            }
-
-            if(currentUser.PublicIP == null)
-            {
-                return BadRequest("Public IP is Null");
-            }
-
-            PagedResult<Unit> unitResults = await _unitManager.QueryAsync(new UnitQuery() { IsDeleted = false, PublicIP = currentUser.PublicIP, IsConnected = true });
-
-            if(unitResults.FilteredCount > 0)
-            {
-                List<Unit> availableUnits = unitResults.ToList();//unitResults.Where(t => t.PairedId == Guid.Empty || t.PairedId == null).ToList();
-                List<UnitViewModel> availableDevices = new List<UnitViewModel>();
-
-                availableUnits.ForEach(unit => {
-                    availableDevices.Add(new UnitViewModel() {
-                        Id = unit.Id,
-                        // PublicIP = unit.PublicIP,
-                        // PairedId = unit.PairedId,
-                        IsConnected = unit.IsConnected,
-                        SerialNumber = unit.SerialNumber,
-                        Name = unit.Name
-                    });
-                });
-
-                availableDevices.Insert(0, new UnitViewModel() { Id = Guid.Empty });
-                return availableDevices;
-                // return availableGuids.Select(t => t.ToString()).ToArray();
-            }
-            else
-            {
-                return new List<UnitViewModel>() { new UnitViewModel() { Id = Guid.Empty } };
-            }
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
-
-        /// <summary>
         /// Endpoint to get a user ID from a passed in device ID
         /// </summary>
         /// <param name="deviceId"></param>
@@ -238,7 +142,7 @@ namespace AgerDeviceAPI.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("Add/{serialNumber}/{userId}")]
+        [Route("add/{serialNumber}/{userId}")]
         public async Task<ActionResult<bool>> AssignUnitToUser(string serialNumber, Guid userId)
         {
             if(serialNumber != null && userId != null)
@@ -267,8 +171,8 @@ namespace AgerDeviceAPI.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("Remove/{unitId}/{userId}")]
-        public async Task<ActionResult<bool>> RemoveUnitFromUser(Guid unitId, Guid userId)
+        [Route("remove/{unitId}/{userId}")]
+        public async Task<ActionResult> RemoveUnitFromUser(Guid unitId, Guid userId)
         {
             if(unitId != null && userId != null)
             {
@@ -287,6 +191,78 @@ namespace AgerDeviceAPI.Controllers
             }
 
             return BadRequest();
+        }
+
+        /// <summary>
+        /// Endpoint to update device nickname
+        /// </summary>
+        /// <param name="unitId"></param>
+        /// <param name="unitName"></param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Route("update-name/{unitId}/{unitName}")]
+        public async Task<ActionResult> UpdateUnitName(Guid unitId, string unitName)
+        {
+            if(unitId != null)
+            {
+                PagedResult<Unit> results = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
+
+                if(results.FilteredCount > 0)
+                {
+                    Unit selectedUnit = results.First();
+                    selectedUnit.Name = unitName;
+
+                    await _unitManager.UpdateAsync(selectedUnit);
+                    return Ok();
+                }
+
+                return NotFound();
+            }
+
+            return BadRequest();
+        }
+
+        /// <summary>
+        /// Endpoint to update settings for the Unit
+        /// </summary>
+        /// <params name="model"></params>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("Update")]
+        public async Task<ActionResult> UpdateUnit(UnitViewModel model)
+        {
+            if(!model.Id.HasValue)
+            {
+                PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id });
+
+                if(result.FilteredCount > 0) {
+                    result[0].Name = model.Name;
+                    result[0].Modified = DateTime.Now;
+
+                    await _unitManager.UpdateAsync(result[0]);
+                    return Ok();
+                }
+
+                return NotFound();
+            }
+
+            return BadRequest();
+        }
+
+        [HttpGet]
+        [Route("start-acquisition/{unitId}")]
+        public async Task<ActionResult> StartAcquisition(Guid unitId)
+        {
+            await _acquisitionService.StartAcquisition(unitId);
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("stop-acquisition/{unitId}")]
+        public async Task<ActionResult> StopAcquisition(Guid unitId)
+        {
+            await _acquisitionService.StopAcquisition(unitId);
+            return Ok();
         }
 
         #endregion NEEDED_FOR_DEMONSTRATION
