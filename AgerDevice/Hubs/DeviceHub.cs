@@ -52,7 +52,7 @@ namespace AgerDevice.Hubs
             }
 
             IHttpConnectionFeature feature = Context.Features.Get<IHttpConnectionFeature>();
-            currentUnit.PublicIP = feature.RemoteIpAddress.ToString().Trim();
+            // currentUnit.PublicIP = feature.RemoteIpAddress.ToString().Trim();
             currentUnit.Modified = DateTime.Now;
             currentUnit.ConnectionId = Context.ConnectionId;
             currentUnit.IsConnected = true;
