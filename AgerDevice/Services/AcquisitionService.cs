@@ -45,6 +45,17 @@ namespace AgerDevice.Services
             }
         }
 
+        public async Task CreateService(Guid unitId)
+        {
+            UnitAcquisitionService? service = null;
+            _unitServices.TryGetValue(unitId, out service);
+
+            if(service == null) {
+                service = new UnitAcquisitionService(_unitManager);
+                _unitServices.AddOrUpdate(unitId, service, (key, oldValue) => service);
+            }
+        }
+
         public async Task StopAcquisition(Guid unitId)
         {
             UnitAcquisitionService? service = null;
@@ -53,6 +64,17 @@ namespace AgerDevice.Services
             if(service != null)
             {
                 await service.StopAcquisition();
+            }
+        }
+
+        public async Task LiveData(Guid unitId, string data)
+        {
+            UnitAcquisitionService? service = null;
+            _unitServices.TryGetValue(unitId, out service);
+
+            if(service != null)
+            {
+                await service.IncomingData(data);
             }
         }
     }
