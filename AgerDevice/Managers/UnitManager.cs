@@ -15,12 +15,14 @@ namespace AgerDevice.Managers
     public class UnitManager
     {
         private readonly IUnitRepository _unitRepository;
+        private readonly IHubContext<DeviceHub> _deviceHub;
         private readonly IHubContext<MonitorHub> _monitorHub;
 
-        public UnitManager(IUnitRepository unitRepository, IHubContext<MonitorHub> monitorHub)
+        public UnitManager(IUnitRepository unitRepository, IHubContext<MonitorHub> monitorHub, IHubContext<DeviceHub> deviceHub)
         {
             _unitRepository = unitRepository;
             _monitorHub = monitorHub;
+            _deviceHub = deviceHub;
         }
 
         public async Task CreateAsync(Unit unit)
@@ -64,9 +66,14 @@ namespace AgerDevice.Managers
             await _monitorHub.Clients.All.SendAsync("unitUnlinked", unit);
         }
 
-        public async Task NewData(int value)
+        public async Task NewData(IncomingData[] data)
         {
-            await _monitorHub.Clients.All.SendAsync("newValue", value);
+            await _monitorHub.Clients.All.SendAsync("newValue", Newtonsoft.Json.JsonConvert.SerializeObject(data));
+        }
+
+        public async Task SendCommand(string connectionId, string command)
+        {
+            await _deviceHub.Clients.Client(connectionId).SendAsync("ExecuteCommand", command);
         }
     }
 }
