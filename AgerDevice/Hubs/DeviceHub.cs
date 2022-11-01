@@ -59,6 +59,7 @@ namespace AgerDevice.Hubs
 
             await _unitManager.UpdateAsync(currentUnit);
             await _unitManager.NotifyConnectionChange(currentUnit);
+            await _acquisitionService.CreateService(currentUnit.Id);
             // _deviceConnectionHandler.AddOrUpdate(currentUnit.Id, Context.ConnectionId, (key, oldValue) => Context.ConnectionId);
 
             await base.OnConnectedAsync();
@@ -107,9 +108,9 @@ namespace AgerDevice.Hubs
             await base.OnDisconnectedAsync(ex);
         }
 
-        public async Task SendMessage(string connectionId, string message)
+        public async Task LiveData(Guid unitId, string data)
         {
-            await Clients.Client(connectionId).SendAsync("SendSignal", Context.ConnectionId, message);
+            await _acquisitionService.LiveData(unitId, data);
         }
     }
 }
