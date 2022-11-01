@@ -253,16 +253,40 @@ namespace AgerDeviceAPI.Controllers
         [Route("start-acquisition/{unitId}")]
         public async Task<ActionResult> StartAcquisition(Guid unitId)
         {
-            await _acquisitionService.StartAcquisition(unitId);
-            return Ok();
+            if(unitId != null)
+            {
+                PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
+
+                if(result.FilteredCount > 0) {
+                    await _acquisitionService.StartAcquisition(unitId);
+                    await _unitManager.SendCommand(result[0].ConnectionId, "START");
+                    return Ok();
+                }
+
+                return NotFound();
+            }
+
+            return BadRequest();
         }
 
         [HttpGet]
         [Route("stop-acquisition/{unitId}")]
         public async Task<ActionResult> StopAcquisition(Guid unitId)
         {
-            await _acquisitionService.StopAcquisition(unitId);
-            return Ok();
+            if(unitId != null)
+            {
+                PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
+
+                if(result.FilteredCount > 0) {
+                    await _acquisitionService.StopAcquisition(unitId);
+                    await _unitManager.SendCommand(result[0].ConnectionId, "STOP");
+                    return Ok();
+                }
+
+                return NotFound();
+            }
+
+            return BadRequest();
         }
 
         #endregion NEEDED_FOR_DEMONSTRATION
