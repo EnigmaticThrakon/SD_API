@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AgerDevice.Managers;
+using AgerDevice.Core.Models;
+using System.Collections.Concurrent;
 
 namespace AgerDevice.Services
 {
     public class UnitAcquisitionService
     {
+        private ConcurrentQueue<IncomingData> _dataQueue;
         private System.Timers.Timer _acquisitionTimer;
         private UnitManager _unitManager;
         private Random _rnd;
@@ -17,6 +20,7 @@ namespace AgerDevice.Services
         {
             _unitManager = unitManager;
             _rnd = new Random();
+            _dataQueue = new ConcurrentQueue<IncomingData>();
         }
 
         public async Task StartAcquisition()
@@ -34,9 +38,20 @@ namespace AgerDevice.Services
             _acquisitionTimer.Dispose();
         }
 
+        public async Task IncomingData(string data)
+        {
+            List<IncomingData> parsedData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<IncomingData>>(data);
+            for (int i = 0; i < parsedData.Count(); i++)
+            {
+                _dataQueue.Enqueue(parsedData[i]);
+            }
+        }
+
         private async Task SendData()
         {
-            await _unitManager.NewData(_rnd.Next(400));
+            if(_dataQueue.Count > 0) {
+                await _unitManager.NewData(_dataQueue.ToArray());
+            }
         }
     }
 }
