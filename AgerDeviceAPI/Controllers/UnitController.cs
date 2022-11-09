@@ -289,6 +289,46 @@ namespace AgerDeviceAPI.Controllers
             return BadRequest();
         }
 
+        [HttpGet]
+        [Route("activate-humidity/{unitId}")]
+        public async Task<ActionResult> ActivateHumidity(Guid unitId)
+        {
+            if(unitId != null)
+            {
+                PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
+
+                if(result.FilteredCount > 0) 
+                {
+                    await _unitManager.SendCommand(result.First().ConnectionId, "humidity-start");
+                    return Ok();
+                }
+
+                return NotFound();
+            }
+
+            return BadRequest();
+        }
+
+        [HttpGet]
+        [Route("deactivate-humidity/{unitId}")]
+        public async Task<ActionResult> DeactivateHumidity(Guid unitId)
+        {
+            if(unitId != null)
+            {
+                PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
+
+                if(result.FilteredCount > 0) 
+                {
+                    await _unitManager.SendCommand(result.First().ConnectionId, "humidity-stop");
+                    return Ok();
+                }
+
+                return NotFound();
+            }
+
+            return BadRequest();
+        }
+
         #endregion NEEDED_FOR_DEMONSTRATION
     }
 }
