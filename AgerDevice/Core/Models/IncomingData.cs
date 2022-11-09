@@ -13,7 +13,7 @@ namespace AgerDevice.Core.Models
         public double? Humidity { get; set; }
         public double? AirFlow { get; set; }
         public double? Weight { get; set; }
-        public int? Door { get; set; }
+        public bool? Door { get; set; }
 
         public IncomingData() { }
     }
