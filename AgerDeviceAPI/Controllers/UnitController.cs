@@ -117,7 +117,7 @@ namespace AgerDeviceAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("{id}")]
+        [Route("{userId}")]
         public async Task<ActionResult<List<UnitViewModel>>> GetUserUnits(Guid userId)
         {
             PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { IsDeleted = false, PairedId = userId });
