@@ -33,24 +33,35 @@ namespace AgerDeviceAPI.Controllers
 
             if(results.FilteredCount > 0)
             {
-                User returningUser = results[0];
+                User returningUser = results.First();
                 returningUser.LastConnected = DateTime.Now;
+                returningUser.Modified = DateTime.Now;
 
                 await _userManager.UpdateAsync(returningUser);
-                return new UserViewModel() { Id = returningUser.Id, PublicIP = returningUser.PublicIP };
+                return new UserViewModel() { 
+                    Id = returningUser.Id, 
+                    UserName = String.IsNullOrEmpty(returningUser.UserName) ? returningUser.Id.ToString() : returningUser.UserName,
+                    DeviceId = returningUser.SerialNumber
+                };
             }
 
+            Guid newUserId = Guid.NewGuid();
             User newUser = new User() {
-                Id = Guid.NewGuid(),
+                Id = newUserId,
                 Modified = DateTime.Now,
                 IsDeleted = false,
                 SerialNumber = deviceId,
-                LastConnected = DateTime.Now
+                LastConnected = DateTime.Now,
+                UserName = newUserId.ToString()
             };
 
             await _userManager.CreateAsync(newUser);
 
-            return new UserViewModel() { Id = newUser.Id, PublicIP = newUser.PublicIP };
+            return new UserViewModel() { 
+                Id = newUser.Id, 
+                UserName = newUser.UserName,
+                DeviceId = newUser.SerialNumber
+            };
         }
 
         /// <summary>
@@ -58,59 +69,26 @@ namespace AgerDeviceAPI.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPut]
-        [Route("Settings/{id}")]
-        public async Task<UserSettingsViewModel> GetCurrentSettings(Guid id)
-        {
-            try
-            {
-                PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { Id = id });
+        // [HttpPut]
+        // [Route("Settings/{id}")]
+        // public async Task<UserSettingsViewModel> GetCurrentSettings(Guid id)
+        // {
+        //     try
+        //     {
+        //         PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { Id = id });
 
-                if(result.FilteredCount > 0)
-                {
-                    return UserSettingsViewModel.FromModel(result[0]);
-                }
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(exception: ex, message: null);
-            }
+        //         if(result.FilteredCount > 0)
+        //         {
+        //             return UserSettingsViewModel.FromModel(result[0]);
+        //         }
+        //     }
+        //     catch(Exception ex)
+        //     {
+        //         _logger.LogError(exception: ex, message: null);
+        //     }
 
-            return new UserSettingsViewModel();
-        }
-
-        /// <summary>
-        /// Endpont for saving changed settings for a user
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPut]
-        [Route("Save")]
-        public async Task<ActionResult> SaveSettings(UserSettingsViewModel model)
-        {
-            try
-            {
-                PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { Id = model.Id });
-
-                if(result.FilteredCount > 0)
-                {
-                    result[0].Modified = DateTime.Now;
-                    result[0].GroupId = model.GroupId.HasValue ? model.GroupId.Value : result[0].GroupId;
-                    result[0].GroupsEnabled = model.GroupsEnabled.HasValue ? model.GroupsEnabled.Value : result[0].GroupsEnabled;
-                    result[0].UserName = model.UserName == null ? String.Empty : model.UserName;
-
-                    await _userManager.UpdateAsync(result[0]);
-
-                    return Ok();
-                }
-
-                return Ok();
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
+        //     return new UserSettingsViewModel();
+        // }
 
         #region NEEDED_FOR_DEMONSTRATION
 
