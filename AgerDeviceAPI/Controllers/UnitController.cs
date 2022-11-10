@@ -77,32 +77,6 @@ namespace AgerDeviceAPI.Controllers
         // }
 
         /// <summary>
-        /// Endpoint to get the units that are currently linked with the user
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("{id}")]
-        public async Task<ActionResult<List<UnitViewModel>>> GetUserUnits(Guid id)
-        {
-            PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { IsDeleted = false, PairedId = id });
-            List<UnitViewModel> response = new List<UnitViewModel>();
-
-            for(int i = 0; i < units.FilteredCount; i++) {
-                    response.Add(new UnitViewModel() {
-                        IsConnected = units[i].IsConnected,
-                        // PublicIP = units[i].PublicIP,
-                        SerialNumber = units[i].SerialNumber,
-                        Id = units[i].Id,
-                        // PairedId = units[i].PairedId,
-                        Name = units[i].Name
-                    });
-            }
-
-            return response;
-        }
-
-        /// <summary>
         /// Endpoint to get a user ID from a passed in device ID
         /// </summary>
         /// <param name="deviceId"></param>
@@ -136,6 +110,30 @@ namespace AgerDeviceAPI.Controllers
 
 
         #region NEEDED_FOR_DEMONSTRATION
+
+        /// <summary>
+        /// Endpoint to get the units that are currently linked with the user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<List<UnitViewModel>>> GetUserUnits(Guid userId)
+        {
+            PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { IsDeleted = false, PairedId = userId });
+            List<UnitViewModel> response = new List<UnitViewModel>();
+
+            for(int i = 0; i < units.FilteredCount; i++) {
+                    response.Add(new UnitViewModel() {
+                        IsConnected = units[i].IsConnected,
+                        SerialNumber = units[i].SerialNumber,
+                        Id = units[i].Id,
+                        Name = units[i].Name
+                    });
+            }
+
+            return response;
+        }
 
         /// <summary>
         /// Endpoint to pair a device to a user
