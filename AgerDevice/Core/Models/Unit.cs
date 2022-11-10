@@ -16,6 +16,7 @@ namespace AgerDevice.Core.Models
         public string ConnectionId { get; set; }
         public string PairedIds { get; set; }
         public string? Name { get; set; }
+        public bool IsAcquisitioning { get; set; }
 
         public Unit()
         {
