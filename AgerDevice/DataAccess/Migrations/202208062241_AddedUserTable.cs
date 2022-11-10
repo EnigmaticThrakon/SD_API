@@ -13,7 +13,7 @@ namespace AgerDevice.DataAccess.Migrations
                 .WithColumn("SerialNumber").AsString().NotNullable()
                 .WithColumn("IsDeleted").AsBoolean().WithDefaultValue(false)
                 .WithColumn("LastConnected").AsDateTime().NotNullable()
-                .WithColumn("ConnectionId").AsString()
+                .WithColumn("ConnectionId").AsString().Nullable()
                 .WithColumn("UserName").AsString().NotNullable().WithDefaultValue("");
         }
 
