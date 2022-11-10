@@ -30,51 +30,51 @@ namespace AgerDeviceAPI.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPut]
-        [Route("Unlink")]
-        public async Task<ActionResult<bool>> UnlinkUnit(UnitViewModel model)
-        {
-            PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id });
+        // [HttpPut]
+        // [Route("Unlink")]
+        // public async Task<ActionResult<bool>> UnlinkUnit(UnitViewModel model)
+        // {
+        //     PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id });
 
-            if(units.FilteredCount > 0)
-            {
-                // units[0].PairedId = Guid.Empty;
-                units[0].Modified = DateTime.Now;
-                units[0].Name = null;
+        //     if(units.FilteredCount > 0)
+        //     {
+        //         // units[0].PairedId = Guid.Empty;
+        //         units[0].Modified = DateTime.Now;
+        //         units[0].Name = null;
 
-                await _unitManager.UpdateAsync(units[0]);
-                await _unitManager.NotifyUnitUnlinked(units[0]);
+        //         await _unitManager.UpdateAsync(units[0]);
+        //         await _unitManager.NotifyUnitUnlinked(units[0]);
 
-                return true;
-            }
+        //         return true;
+        //     }
 
-            return false;
-        }
+        //     return false;
+        // }
 
 
         /// <summary></summary>
         /// Endpoint to link unit to user
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPut]
-        [Route("Link")]
-        public async Task<ActionResult<bool>> LinkUnit(UnitViewModel model)
-        {
-            PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id });
+        // [HttpPut]
+        // [Route("Link")]
+        // public async Task<ActionResult<bool>> LinkUnit(UnitViewModel model)
+        // {
+        //     PagedResult<Unit> units = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id });
 
-            if(units.FilteredCount > 0)// && model.PairedId.HasValue)
-            {
-                // units[0].PairedId = model.PairedId.Value;
-                units[0].Modified = DateTime.Now;
+        //     if(units.FilteredCount > 0)// && model.PairedId.HasValue)
+        //     {
+        //         // units[0].PairedId = model.PairedId.Value;
+        //         units[0].Modified = DateTime.Now;
 
-                await _unitManager.UpdateAsync(units[0]);
-                await _unitManager.NotifyUnitLinked(units[0]);
+        //         await _unitManager.UpdateAsync(units[0]);
+        //         await _unitManager.NotifyUnitLinked(units[0]);
 
-                return true;
-            }
+        //         return true;
+        //     }
 
-            return false;
-        }
+        //     return false;
+        // }
 
         /// <summary>
         /// Endpoint to get the units that are currently linked with the user
@@ -119,11 +119,13 @@ namespace AgerDeviceAPI.Controllers
                 return connectingUnit.Id.ToString();
             }
 
+            Guid newUnitGuid = Guid.NewGuid();
             Unit newUnit = new Unit() {
-                Id = Guid.NewGuid(),
+                Id = newUnitGuid,
                 Modified = DateTime.Now,
                 IsDeleted = false,
-                SerialNumber = model.SerialNumber == null ? String.Empty : model.SerialNumber
+                SerialNumber = model.SerialNumber == null ? String.Empty : model.SerialNumber,
+                Name = String.IsNullOrEmpty(model.Name) ? newUnitGuid.ToString() : model.Name
             };
 
             await _unitManager.CreateAsync(newUnit);
@@ -147,14 +149,24 @@ namespace AgerDeviceAPI.Controllers
         {
             if(serialNumber != null && userId != null)
             {
-                PagedResult<Unit> results = await _unitManager.QueryAsync(new UnitQuery() { SerialNumber = serialNumber });
+                PagedResult<Unit> unitResults = await _unitManager.QueryAsync(new UnitQuery() { SerialNumber = serialNumber });
 
-                if(results.FilteredCount > 0)
+                if(unitResults.FilteredCount > 0)
                 {
-                    Unit selectedUnit = results.First();
+                    Unit selectedUnit = unitResults.First();
                     selectedUnit.UpdatePairings(userId, true);
 
                     await _unitManager.UpdateAsync(selectedUnit);
+
+                    PagedResult<User> userResults = await _userManager.QueryAsync(new UserQuery() { Id = userId });
+
+                    if(userResults.FilteredCount > 0) {
+                        User currentUser = userResults.First();
+
+                        await _unitManager.JoinMonitorGroup(currentUser, selectedUnit.Id);
+                        await _unitManager.NotifyStatusChange(selectedUnit);
+                    }
+
                     return Ok();
                 }
 
@@ -176,14 +188,23 @@ namespace AgerDeviceAPI.Controllers
         {
             if(unitId != null && userId != null)
             {
-                PagedResult<Unit> results = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
+                PagedResult<Unit> unitResults = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
 
-                if(results.FilteredCount > 0)
+                if(unitResults.FilteredCount > 0)
                 {
-                    Unit selectedUnit = results.First();
+                    Unit selectedUnit = unitResults.First();
                     selectedUnit.UpdatePairings(userId, false);
 
                     await _unitManager.UpdateAsync(selectedUnit);
+
+                    PagedResult<User> userResults = await _userManager.QueryAsync(new UserQuery() { Id = userId });
+
+                    if(userResults.FilteredCount > 0) {
+                        User currentUser = userResults.First();
+
+                        await _unitManager.LeaveMonitorGroup(currentUser, selectedUnit.Id);
+                    }
+
                     return Ok();
                 }
 
@@ -297,7 +318,7 @@ namespace AgerDeviceAPI.Controllers
 
                     currentUnit.IsAcquisitioning = false;
                     await _unitManager.UpdateAsync(currentUnit);
-                    
+
                     return Ok();
                 }
 
