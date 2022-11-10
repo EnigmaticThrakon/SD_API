@@ -37,7 +37,7 @@ namespace AgerDevice.Services
         public async Task StartAcquisition(Guid unitId)
         {
             UnitAcquisitionService? service = null;
-            service = _unitServices.GetOrAdd(unitId, x => new UnitAcquisitionService(_unitManager));
+            service = _unitServices.GetOrAdd(unitId, x => new UnitAcquisitionService(_unitManager, unitId));
 
             if(service != null)
             {
@@ -51,7 +51,7 @@ namespace AgerDevice.Services
             _unitServices.TryGetValue(unitId, out service);
 
             if(service == null) {
-                service = new UnitAcquisitionService(_unitManager);
+                service = new UnitAcquisitionService(_unitManager, unitId);
                 _unitServices.AddOrUpdate(unitId, service, (key, oldValue) => service);
             }
         }

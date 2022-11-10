@@ -15,12 +15,14 @@ namespace AgerDevice.Services
         private System.Timers.Timer _acquisitionTimer;
         private UnitManager _unitManager;
         private Random _rnd;
+        private Guid _unitId;
 
-        public UnitAcquisitionService(UnitManager unitManager) 
+        public UnitAcquisitionService(UnitManager unitManager, Guid unitId) 
         {
             _unitManager = unitManager;
             _rnd = new Random();
             _dataQueue = new ConcurrentQueue<IncomingData>();
+            _unitId = unitId;
         }
 
         public async Task StartAcquisition()
@@ -49,8 +51,16 @@ namespace AgerDevice.Services
 
         private async Task SendData()
         {
+            // IncomingData tempData = new IncomingData();
+            // tempData.AirFlow = _rnd.Next();
+            // tempData.Humidity = _rnd.Next();
+            // tempData.Temperature = _rnd.Next();
+            // tempData.Timestamp = DateTime.Now;
+            // tempData.Door = _rnd.Next(0, 1);
+
+            // await _unitManager.NewData(new Core.Models.IncomingData[] { tempData });
             if(_dataQueue.Count > 0) {
-                await _unitManager.NewData(_dataQueue.ToArray());
+                await _unitManager.NewData(_dataQueue.ToArray(), _unitId);
             }
         }
     }
