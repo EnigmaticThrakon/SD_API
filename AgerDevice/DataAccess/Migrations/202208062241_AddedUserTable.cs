@@ -8,7 +8,12 @@ namespace AgerDevice.DataAccess.Migrations
         public override void Up()
         {
             Create.Table("Users")
-                .WithColumn("Id").AsGuid().PrimaryKey().NotNullable();
+                .WithColumn("Id").AsGuid().PrimaryKey().NotNullable()
+                .WithColumn("Modified").AsDateTime().NotNullable()
+                .WithColumn("SerialNumber").AsString().NotNullable()
+                .WithColumn("IsDeleted").AsBoolean().WithDefaultValue(false)
+                .WithColumn("LastConnected").AsDateTime().NotNullable()
+                .WithColumn("UserName").AsString().NotNullable().WithDefaultValue("");
         }
 
         public override void Down()
