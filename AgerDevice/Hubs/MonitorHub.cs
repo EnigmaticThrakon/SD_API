@@ -47,6 +47,7 @@ namespace AgerDevice.Hubs
 
             currentUser.LastConnected = DateTime.Now;
             currentUser.Modified = DateTime.Now;
+            currentUser.ConnectionId = Context.ConnectionId;
 
             PagedResult<Unit> pairedUnits = await _unitManager.QueryAsync(new UnitQuery() { PairedId = currentUser.Id });
 
