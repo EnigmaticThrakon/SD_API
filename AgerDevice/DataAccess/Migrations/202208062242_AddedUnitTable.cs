@@ -15,7 +15,7 @@ namespace AgerDevice.DataAccess.Migrations
                 .WithColumn("IsConnected").AsBoolean().NotNullable().WithDefaultValue(false)
                 .WithColumn("IsAcquisitioning").AsBoolean().NotNullable().WithDefaultValue(false)
                 .WithColumn("ConnectionId").AsString().Nullable()
-                .WithColumn("PairedIds").AsString().Nullable()
+                .WithColumn("PairedIds").AsString().NotNullable().WithDefaultValue("[]")
                 .WithColumn("Name").AsString().NotNullable().WithDefaultValue("");
         }
 
