@@ -249,7 +249,7 @@ namespace AgerDeviceAPI.Controllers
             return BadRequest();
         }
 
-        [HttpGet]
+        [HttpPut]
         [Route("start-acquisition/{unitId}")]
         public async Task<ActionResult> StartAcquisition(Guid unitId)
         {
@@ -258,8 +258,17 @@ namespace AgerDeviceAPI.Controllers
                 PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
 
                 if(result.FilteredCount > 0) {
-                    await _acquisitionService.StartAcquisition(unitId);
-                    await _unitManager.SendCommand(result[0].ConnectionId, "START");
+
+                    Unit currentUnit = result.First();
+
+                    try {
+                    await _acquisitionService.StartAcquisition(currentUnit.Id);
+                    } catch {}
+
+                    await _unitManager.SendCommand(currentUnit.ConnectionId, "START");
+                    currentUnit.IsAcquisitioning = true;
+
+                    await _unitManager.UpdateAsync(currentUnit);
                     return Ok();
                 }
 
@@ -269,7 +278,7 @@ namespace AgerDeviceAPI.Controllers
             return BadRequest();
         }
 
-        [HttpGet]
+        [HttpPut]
         [Route("stop-acquisition/{unitId}")]
         public async Task<ActionResult> StopAcquisition(Guid unitId)
         {
@@ -278,8 +287,17 @@ namespace AgerDeviceAPI.Controllers
                 PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
 
                 if(result.FilteredCount > 0) {
-                    await _acquisitionService.StopAcquisition(unitId);
-                    await _unitManager.SendCommand(result[0].ConnectionId, "STOP");
+                    Unit currentUnit = result.First();
+
+                    try {
+                    await _acquisitionService.StopAcquisition(currentUnit.Id);
+                    } catch {}
+
+                    await _unitManager.SendCommand(currentUnit.ConnectionId, "STOP");
+
+                    currentUnit.IsAcquisitioning = false;
+                    await _unitManager.UpdateAsync(currentUnit);
+                    
                     return Ok();
                 }
 
@@ -327,6 +345,23 @@ namespace AgerDeviceAPI.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpGet]
+        [Route("is-acquisitioning/{unitId}")]
+        public async Task<ActionResult<bool>> IsAcquisitioning(Guid unitId)
+        {
+            if(unitId != null) {
+                PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
+
+                if(result.FilteredCount > 0) {
+                    return result.First().IsAcquisitioning;
+                }
+
+                return NotFound(false);
+            }
+
+            return BadRequest(false);
         }
 
         #endregion NEEDED_FOR_DEMONSTRATION
