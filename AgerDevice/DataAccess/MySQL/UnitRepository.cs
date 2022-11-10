@@ -133,9 +133,13 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $" LIMIT @{nameof(query.Skip)}, @{nameof(query.Take)}";
                 }
 
-                Task<IEnumerable<Unit>> records = connection.QueryAsync<Unit>(sql, parameters);
+                IEnumerable<Unit> records = await connection.QueryAsync<Unit>(sql, parameters);
 
-                return new PagedResult<Unit>(await records, await totalRecords, await filteredRecords);
+                if(query.PairedId.HasValue) {
+                    records = records.Where(t => t.ParsePairings().Contains(query.PairedId.Value));
+                }
+
+                return new PagedResult<Unit>(records, await totalRecords, records.Count());
             }
         }
 
