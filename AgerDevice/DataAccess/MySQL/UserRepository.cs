@@ -32,10 +32,7 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.SerialNumber)},
                     {nameof(User.IsDeleted)},
                     {nameof(User.LastConnected)},
-                    {nameof(User.PublicIP)},
-                    {nameof(User.UserName)},
-                    {nameof(User.GroupId)},
-                    {nameof(User.GroupsEnabled)}
+                    {nameof(User.UserName)}
                 ) 
                 VALUES 
                 (
@@ -44,10 +41,7 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(User.SerialNumber)},
                     @{nameof(User.IsDeleted)},
                     @{nameof(User.LastConnected)},
-                    @{nameof(User.PublicIP)},
-                    @{nameof(User.UserName)},
-                    @{nameof(User.GroupId)},
-                    @{nameof(User.GroupsEnabled)}
+                    @{nameof(User.UserName)}
                 )", user);
             }
         }
@@ -78,10 +72,7 @@ namespace AgerDevice.DataAccess.MySQL
                 u.{nameof(User.SerialNumber)},
                 u.{nameof(User.Modified)},
                 u.{nameof(User.IsDeleted)},
-                u.{nameof(User.PublicIP)},
-                u.{nameof(User.UserName)},
-                u.{nameof(User.GroupId)},
-                u.{nameof(User.GroupsEnabled)}
+                u.{nameof(User.UserName)}
                 FROM Users u
                 WHERE 1=1 ";
 
@@ -115,28 +106,10 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $@" AND {nameof(User.LastConnected)} = @{nameof(query.LastConnected)}";
                 }
 
-                if (query.PublicIP != null)
-                {
-                    parameters.Add(nameof(query.PublicIP), query.PublicIP, DbType.String);
-                    sql += $@" AND {nameof(User.PublicIP)} = @{nameof(query.PublicIP)}";
-                }
-
                 if (query.UserName != null)
                 {
                     parameters.Add(nameof(query.UserName), query.UserName, DbType.String);
                     sql += $@" AND {nameof(User.UserName)} = @{nameof(query.UserName)}";
-                }
-
-                if (query.GroupId != null)
-                {
-                    parameters.Add(nameof(query.GroupId), query.GroupId, DbType.Guid);
-                    sql += $@" AND {nameof(User.GroupId)} = @{nameof(query.GroupId)}";
-                }
-
-                if (query.GroupsEnabled != null)
-                {
-                    parameters.Add(nameof(query.GroupsEnabled), query.GroupsEnabled, DbType.Boolean);
-                    sql += $@" AND {nameof(User.GroupsEnabled)} = @{nameof(query.GroupsEnabled)}";
                 }
 
                 Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Users");
@@ -169,10 +142,7 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.Modified)} = @{nameof(User.Modified)},
                     {nameof(User.IsDeleted)} = @{nameof(User.IsDeleted)},
                     {nameof(User.LastConnected)} = @{nameof(User.LastConnected)},
-                    {nameof(User.PublicIP)} = @{nameof(User.PublicIP)},
-                    {nameof(User.UserName)} = @{nameof(User.UserName)},
-                    {nameof(User.GroupId)} = @{nameof(User.GroupId)},
-                    {nameof(User.GroupsEnabled)} = @{nameof(User.GroupsEnabled)}
+                    {nameof(User.UserName)} = @{nameof(User.UserName)}
                     WHERE {nameof(User.Id)} = @{nameof(User.Id)}",
                 record);
             }
