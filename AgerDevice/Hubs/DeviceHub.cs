@@ -56,7 +56,7 @@ namespace AgerDevice.Hubs
             currentUnit.IsConnected = true;
 
             await _unitManager.UpdateAsync(currentUnit);
-            await _unitManager.NotifyConnectionChange(currentUnit);
+            await _unitManager.NotifyStatusChange(currentUnit);
             await _acquisitionService.CreateService(currentUnit.Id);
 
             await base.OnConnectedAsync();
@@ -76,7 +76,7 @@ namespace AgerDevice.Hubs
                     currentUnit.ConnectionId = String.Empty;
 
                     await _unitManager.UpdateAsync(currentUnit);
-                    await _unitManager.NotifyConnectionChange(currentUnit);
+                    await _unitManager.NotifyStatusChange(currentUnit);
                 }
                 else
                 {
