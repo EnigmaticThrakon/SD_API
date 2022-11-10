@@ -43,8 +43,6 @@ namespace AgerDevice.Hubs
                 throw new Exception();
             }
 
-            IHttpConnectionFeature feature = Context.Features.Get<IHttpConnectionFeature>();
-            currentUser.PublicIP = feature.RemoteIpAddress.ToString().Trim();
             currentUser.LastConnected = DateTime.Now;
             currentUser.Modified = DateTime.Now;
 
