@@ -8,11 +8,11 @@ namespace AgerDevice.Core.Query
         public DateTime? Modified { get; set; }
         public string? SerialNumber { get; set; }
         public bool? IsDeleted { get; set; }
-        public string? PublicIP { get; set; }
         public bool? IsConnected { get; set; }
         public string? ConnectionId { get; set; }
         public Guid? PairedId { get; set; }
         public string? Name { get; set; }
+        public bool? IsAcquisitioning { get; set; }
 
         public UnitQuery()
         {
@@ -20,7 +20,7 @@ namespace AgerDevice.Core.Query
             Modified = null;
             SerialNumber = null;
             IsDeleted = null;
-            PublicIP = null;
+            IsAcquisitioning = null;
             IsConnected = null;
             ConnectionId = null;
             PairedId = null;
