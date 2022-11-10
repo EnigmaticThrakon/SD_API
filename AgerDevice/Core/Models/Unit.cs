@@ -72,7 +72,7 @@ namespace AgerDevice.Core.Models
                 tempList.Remove(id);
             }
 
-            PairedIds = Newtonsoft.Json.JsonConvert.SerializeObject(tempList);
+            PairedIds = Newtonsoft.Json.JsonConvert.SerializeObject(tempList.Distinct().ToList());
         }
     }
 }
