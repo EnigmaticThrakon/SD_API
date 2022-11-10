@@ -14,10 +14,12 @@ namespace AgerDevice.Hubs
     public class MonitorHub : Hub
     {
         private readonly UserManager _userManager;
+        private readonly UnitManager _unitManager;
 
-        public MonitorHub(UserManager userManager)
+        public MonitorHub(UserManager userManager, UnitManager unitManager)
         {
             _userManager = userManager;
+            _unitManager = unitManager;
         }
 
         public async override Task OnConnectedAsync()
@@ -30,7 +32,7 @@ namespace AgerDevice.Hubs
 
                 if(result.FilteredCount > 0) 
                 {
-                    currentUser = result[0];
+                    currentUser = result.First();
                 }
                 else
                 {
@@ -46,9 +48,36 @@ namespace AgerDevice.Hubs
             currentUser.LastConnected = DateTime.Now;
             currentUser.Modified = DateTime.Now;
 
+            PagedResult<Unit> pairedUnits = await _unitManager.QueryAsync(new UnitQuery() { PairedId = currentUser.Id });
+
+            if(pairedUnits.FilteredCount > 0) {
+                foreach(Unit unit in pairedUnits) {
+                    await JoinGroup(unit.Id.ToString());
+                }
+            }
+
             await _userManager.UpdateAsync(currentUser);
 
             await base.OnConnectedAsync();
+        }
+
+        public async override Task OnDisconnectedAsync(Exception ex)
+        {
+            PagedResult<User> results = await _userManager.QueryAsync(new UserQuery() { ConnectionId = Context.ConnectionId });
+
+            if(results.FilteredCount > 0) {
+                User currentUser = results.First();
+
+                PagedResult<Unit> pairedUnits = await _unitManager.QueryAsync(new UnitQuery() { PairedId = currentUser.Id });
+
+                if(pairedUnits.FilteredCount > 0) {
+
+                    foreach(Unit unit in pairedUnits) {
+                        await LeaveGroup(unit.Id.ToString());
+                    }
+                }
+            }
+            await base.OnDisconnectedAsync(ex);
         }
         
         public async Task JoinGroup(string groupName)
