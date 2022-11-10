@@ -14,6 +14,7 @@ namespace AgerDevice.Core.Models
         public bool? IsDeleted { get; set; }
         public DateTime? LastConnected { get; set; }
         public string? UserName { get; set; }
+        public string? ConnectionId { get; set; }
 
         public User() { }
     }

@@ -32,7 +32,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.SerialNumber)},
                     {nameof(User.IsDeleted)},
                     {nameof(User.LastConnected)},
-                    {nameof(User.UserName)}
+                    {nameof(User.UserName)},
+                    {nameof(User.ConnectionId)}
                 ) 
                 VALUES 
                 (
@@ -41,7 +42,8 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(User.SerialNumber)},
                     @{nameof(User.IsDeleted)},
                     @{nameof(User.LastConnected)},
-                    @{nameof(User.UserName)}
+                    @{nameof(User.UserName)},
+                    @{nameof(User.ConnectionId)}
                 )", user);
             }
         }
@@ -72,7 +74,8 @@ namespace AgerDevice.DataAccess.MySQL
                 u.{nameof(User.SerialNumber)},
                 u.{nameof(User.Modified)},
                 u.{nameof(User.IsDeleted)},
-                u.{nameof(User.UserName)}
+                u.{nameof(User.UserName)},
+                u.{nameof(User.ConnectionId)}
                 FROM Users u
                 WHERE 1=1 ";
 
@@ -86,6 +89,12 @@ namespace AgerDevice.DataAccess.MySQL
                 {
                     parameters.Add(nameof(query.SerialNumber), query.SerialNumber, DbType.String);
                     sql += $@" AND {nameof(User.SerialNumber)} = @{nameof(query.SerialNumber)}";
+                }
+
+                if (query.ConnectionId != null)
+                {
+                    parameters.Add(nameof(query.ConnectionId), query.ConnectionId, DbType.String);
+                    sql += $@" AND {nameof(User.ConnectionId)} = @{nameof(query.ConnectionId)}";
                 }
 
                 if (query.Modified != null)
@@ -142,7 +151,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(User.Modified)} = @{nameof(User.Modified)},
                     {nameof(User.IsDeleted)} = @{nameof(User.IsDeleted)},
                     {nameof(User.LastConnected)} = @{nameof(User.LastConnected)},
-                    {nameof(User.UserName)} = @{nameof(User.UserName)}
+                    {nameof(User.UserName)} = @{nameof(User.UserName)},
+                    {nameof(User.ConnectionId)} = @{nameof(User.ConnectionId)}
                     WHERE {nameof(User.Id)} = @{nameof(User.Id)}",
                 record);
             }

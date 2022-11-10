@@ -10,6 +10,7 @@ namespace AgerDevice.Core.Query
         public bool? IsDeleted { get; set; }
         public DateTime? LastConnected { get; set; }
         public string? UserName { get; set; }
+        public string? ConnectionId { get; set; }
 
         public UserQuery()
         {
@@ -19,6 +20,7 @@ namespace AgerDevice.Core.Query
             IsDeleted = null;
             LastConnected = null;
             UserName = null;
+            ConnectionId = null;
         }
 
         public enum SortColumns
