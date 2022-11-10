@@ -51,29 +51,39 @@ namespace AgerDevice.Managers
             await _unitRepository.UpdateAsync(unit);
         }
 
-        public async Task NotifyConnectionChange(Unit unit)
+        public async Task NotifyStatusChange(Unit unit)
         {
-            await _monitorHub.Clients.All.SendAsync("newConnection", unit);
+            await _monitorHub.Clients.Group(unit.Id.ToString()).SendAsync("statusChanged", unit);
+            // await _monitorHub.Clients.All.SendAsync("newConnection", unit);
         }
 
-        public async Task NotifyUnitLinked(Unit unit)
-        {
-            await _monitorHub.Clients.All.SendAsync("unitLinked", unit);
-        }
+        // public async Task NotifyUnitLinked(Unit unit)
+        // {
+        //     await _monitorHub.Clients.All.SendAsync("unitLinked", unit);
+        // }
 
-        public async Task NotifyUnitUnlinked(Unit unit)
-        {
-            await _monitorHub.Clients.All.SendAsync("unitUnlinked", unit);
-        }
+        // public async Task NotifyUnitUnlinked(Unit unit)
+        // {
+        //     await _monitorHub.Clients.All.SendAsync("unitUnlinked", unit);
+        // }
 
-        public async Task NewData(IncomingData[] data)
+        public async Task NewData(IncomingData[] data, Guid unitId)
         {
-            await _monitorHub.Clients.All.SendAsync("newValue", Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            await _monitorHub.Clients.Group(unitId.ToString()).SendAsync("newValue", Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            // await _monitorHub.Clients.All.SendAsync("newValue", Newtonsoft.Json.JsonConvert.SerializeObject(data));
         }
 
         public async Task SendCommand(string connectionId, string command)
         {
             await _deviceHub.Clients.Client(connectionId).SendAsync("ExecuteCommand", command);
+        }
+
+        public async Task JoinMonitorGroup(User currentUser, Guid unitId) {
+            await _monitorHub.Groups.AddToGroupAsync(currentUser.ConnectionId, unitId.ToString());
+        }
+
+        public async Task LeaveMonitorGroup(User currentUser, Guid unitId) {
+            await _monitorHub.Groups.RemoveFromGroupAsync(currentUser.ConnectionId, unitId.ToString());
         }
     }
 }
