@@ -20,13 +20,15 @@ namespace AgerDeviceAPI.Controllers
             _userManager = userManager;
         }
 
-        /// <summary>
+        #region NEEDED_FOR_DEMONSTRATION
+
+/// <summary>
         /// Endpoint to get a user ID from a passed in serial number
         /// </summary>
         /// <param name="deviceId"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("Incoming/{deviceId}")]
+        [Route("{deviceId}")]
         public async Task<ActionResult<UserViewModel>> IncomingUser(string deviceId)
         {
             PagedResult<User> results = await _userManager.QueryAsync(new UserQuery() { SerialNumber = deviceId });
@@ -63,35 +65,7 @@ namespace AgerDeviceAPI.Controllers
                 DeviceId = newUser.SerialNumber
             };
         }
-
-        /// <summary>
-        /// Endpont for getting the current settings of the user
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        // [HttpPut]
-        // [Route("Settings/{id}")]
-        // public async Task<UserSettingsViewModel> GetCurrentSettings(Guid id)
-        // {
-        //     try
-        //     {
-        //         PagedResult<User> result = await _userManager.QueryAsync(new UserQuery() { Id = id });
-
-        //         if(result.FilteredCount > 0)
-        //         {
-        //             return UserSettingsViewModel.FromModel(result[0]);
-        //         }
-        //     }
-        //     catch(Exception ex)
-        //     {
-        //         _logger.LogError(exception: ex, message: null);
-        //     }
-
-        //     return new UserSettingsViewModel();
-        // }
-
-        #region NEEDED_FOR_DEMONSTRATION
-
+        
         #endregion NEEDED_FOR_DEMONSTRATION
     }
 }
