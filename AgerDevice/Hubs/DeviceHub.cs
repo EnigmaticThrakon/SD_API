@@ -31,12 +31,12 @@ namespace AgerDevice.Hubs
         public async override Task OnConnectedAsync()
         {
             Unit currentUnit;
-            try 
+            try
             {
                 Guid unitId = Guid.Parse(Context.GetHttpContext().Request.Query["unit"]);
                 PagedResult<Unit> result = await _unitManager.QueryAsync(new Core.Query.UnitQuery() { Id = unitId });
 
-                if(result.FilteredCount > 0) 
+                if (result.FilteredCount > 0)
                 {
                     currentUnit = result[0];
                 }
@@ -45,14 +45,12 @@ namespace AgerDevice.Hubs
                     throw new Exception("No Units Found with ID: " + unitId);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.Write(ex.Message);
                 throw new Exception();
             }
 
-            IHttpConnectionFeature feature = Context.Features.Get<IHttpConnectionFeature>();
-            // currentUnit.PublicIP = feature.RemoteIpAddress.ToString().Trim();
             currentUnit.Modified = DateTime.Now;
             currentUnit.ConnectionId = Context.ConnectionId;
             currentUnit.IsConnected = true;
@@ -60,51 +58,37 @@ namespace AgerDevice.Hubs
             await _unitManager.UpdateAsync(currentUnit);
             await _unitManager.NotifyConnectionChange(currentUnit);
             await _acquisitionService.CreateService(currentUnit.Id);
-            // _deviceConnectionHandler.AddOrUpdate(currentUnit.Id, Context.ConnectionId, (key, oldValue) => Context.ConnectionId);
 
             await base.OnConnectedAsync();
         }
 
         public async override Task OnDisconnectedAsync(Exception ex)
         {
-            // Guid unitId = _deviceConnectionHandler.Keys.Where(t => {
-            //     string? connectionId;
-            //     _deviceConnectionHandler.TryGetValue(t, out connectionId);
+            try
+            {
+                PagedResult<Unit> result = await _unitManager.QueryAsync(new Core.Query.UnitQuery() { ConnectionId = Context.ConnectionId });
 
-            //     return connectionId == Context.ConnectionId;
-            // }).FirstOrDefault();
-
-            // if(unitId != Guid.Empty) 
-            // {
-                // string temp;
-                // _deviceConnectionHandler.Remove(unitId, out temp);
-
-                try
+                if (result.FilteredCount > 0)
                 {
-                    PagedResult<Unit> result = await _unitManager.QueryAsync(new Core.Query.UnitQuery() { ConnectionId = Context.ConnectionId });
+                    Unit currentUnit = result[0];
+                    currentUnit.Modified = DateTime.Now;
+                    currentUnit.IsConnected = false;
+                    currentUnit.ConnectionId = String.Empty;
 
-                    if (result.FilteredCount > 0)
-                    {
-                        Unit currentUnit = result[0];
-                        currentUnit.Modified = DateTime.Now;
-                        currentUnit.IsConnected = false;
-                        currentUnit.ConnectionId = String.Empty;
-
-                        await _unitManager.UpdateAsync(currentUnit);
-                        await _unitManager.NotifyConnectionChange(currentUnit);
-                    }
-                    else
-                    {
-                        throw new Exception("No Units Found with Connection ID: " + Context.ConnectionId);
-                    }
+                    await _unitManager.UpdateAsync(currentUnit);
+                    await _unitManager.NotifyConnectionChange(currentUnit);
                 }
-                catch (Exception innerEx)
+                else
                 {
-                    Console.Write(innerEx.Message);
-                    throw new Exception();
+                    throw new Exception("No Units Found with Connection ID: " + Context.ConnectionId);
                 }
-            // }
-            
+            }
+            catch (Exception innerEx)
+            {
+                Console.Write(innerEx.Message);
+                throw new Exception();
+            }
+
             await base.OnDisconnectedAsync(ex);
         }
 
