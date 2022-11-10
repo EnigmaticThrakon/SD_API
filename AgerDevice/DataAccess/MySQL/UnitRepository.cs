@@ -33,6 +33,7 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(Unit.IsDeleted)},
                     {nameof(Unit.IsConnected)},
                     {nameof(Unit.ConnectionId)},
+                    {nameof(Unit.PairedIds)},
                     {nameof(Unit.Name)}
                 ) 
                 VALUES 
@@ -43,6 +44,7 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(Unit.IsDeleted)},
                     @{nameof(Unit.IsConnected)},
                     @{nameof(Unit.ConnectionId)},
+                    @{nameof(Unit.PairedIds)},
                     @{nameof(Unit.Name)}
                 )", unit);
             }
@@ -72,6 +74,7 @@ namespace AgerDevice.DataAccess.MySQL
                 u.{nameof(Unit.IsDeleted)},
                 u.{nameof(Unit.IsConnected)},
                 u.{nameof(Unit.ConnectionId)},
+                u.{nameof(Unit.PairedIds)},
                 u.{nameof(Unit.Name)}
                 FROM Units u
                 WHERE 1=1 ";
@@ -118,6 +121,11 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $@" AND {nameof(Unit.Name)} = @{nameof(query.Name)}";
                 }
 
+                if(query.PairedId.HasValue) {
+                    parameters.Add(nameof(query.PairedId), query.PairedId.Value, DbType.Guid);
+                    sql += $@" AND {nameof(Unit.PairedIds)} like '%{query.PairedId.Value}%'";
+                }
+
                 Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Units");
                 Task<int> filteredRecords = connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM ({sql}) AS Results", parameters);
 
@@ -133,13 +141,9 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $" LIMIT @{nameof(query.Skip)}, @{nameof(query.Take)}";
                 }
 
-                IEnumerable<Unit> records = await connection.QueryAsync<Unit>(sql, parameters);
+                Task<IEnumerable<Unit>> records = connection.QueryAsync<Unit>(sql, parameters);
 
-                if(query.PairedId.HasValue) {
-                    records = records.Where(t => t.ParsePairings().Contains(query.PairedId.Value));
-                }
-
-                return new PagedResult<Unit>(records, await totalRecords, records.Count());
+                return new PagedResult<Unit>(await records, await totalRecords, await filteredRecords);
             }
         }
 
@@ -153,7 +157,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(Unit.IsDeleted)} = @{nameof(Unit.IsDeleted)},
                     {nameof(Unit.IsConnected)} = @{nameof(Unit.IsConnected)},
                     {nameof(Unit.ConnectionId)} = @{nameof(Unit.ConnectionId)},
-                    {nameof(Unit.Name)} = @{nameof(Unit.Name)}
+                    {nameof(Unit.Name)} = @{nameof(Unit.Name)},
+                    {nameof(Unit.PairedIds)} = @{nameof(Unit.PairedIds)}
                     WHERE {nameof(Unit.Id)} = @{nameof(Unit.Id)}",
                 record);
             }
