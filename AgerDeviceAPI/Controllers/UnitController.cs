@@ -326,17 +326,28 @@ namespace AgerDeviceAPI.Controllers
             return BadRequest();
         }
 
-        [HttpGet]
-        [Route("activate-humidity/{unitId}")]
-        public async Task<ActionResult> ActivateHumidity(Guid unitId)
+        [HttpPost]
+        [Route("update-configurations")]
+        public async Task<ActionResult> UpdateUnitConfigurations(UnitSettingsViewModel model)
         {
-            if(unitId != null)
+            if(model.Id.HasValue) 
             {
-                PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
+                PagedResult<Unit> results = await _unitManager.QueryAsync(new UnitQuery() { Id = model.Id.Value });
 
-                if(result.FilteredCount > 0) 
+                if(results.FilteredCount > 0)
                 {
-                    await _unitManager.SendCommand(result.First().ConnectionId, "humidity-start");
+                    Unit currentUnit = results.First();
+                    currentUnit.Name = String.IsNullOrEmpty(model.Name) ? model.Id.Value.ToString() : model.Name;
+
+                    if(model.UnitParameters != null)
+                        currentUnit.UpdateParameters(model.UnitParameters);
+
+                    currentUnit.Modified = DateTime.Now;
+
+                    await _unitManager.UpdateAsync(currentUnit);
+                    await _unitManager.SendCommand(currentUnit.ConnectionId, "updateParameters: " + Newtonsoft.Json.JsonConvert.SerializeObject(model.UnitParameters));
+                    await _unitManager.NotifyStatusChange(currentUnit);
+
                     return Ok();
                 }
 
@@ -347,23 +358,33 @@ namespace AgerDeviceAPI.Controllers
         }
 
         [HttpGet]
-        [Route("deactivate-humidity/{unitId}")]
-        public async Task<ActionResult> DeactivateHumidity(Guid unitId)
+        [Route("get-configurations/{unitId}")]
+        public async Task<ActionResult<UnitSettingsViewModel>> GetUnitConfigurations(Guid unitId)
         {
             if(unitId != null)
             {
-                PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
+                PagedResult<Unit> results = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
 
-                if(result.FilteredCount > 0) 
+                if(results.FilteredCount > 0) 
                 {
-                    await _unitManager.SendCommand(result.First().ConnectionId, "humidity-stop");
-                    return Ok();
+                    Unit currentUnit = results.First();
+
+                    UnitSettingsViewModel viewModel = new UnitSettingsViewModel()
+                    {
+                        Id = currentUnit.Id,
+                        IsAcquisitioning = currentUnit.IsAcquisitioning,
+                        SerialNumber = currentUnit.SerialNumber,
+                        Name = currentUnit.Name,
+                        UnitParameters = currentUnit.GetParameters()
+                    };
+
+                    return Ok(viewModel);
                 }
 
-                return NotFound();
+                return NotFound(null);
             }
 
-            return BadRequest();
+            return BadRequest(null);
         }
 
         [HttpGet]
