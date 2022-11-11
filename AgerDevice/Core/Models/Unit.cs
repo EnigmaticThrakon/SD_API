@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AgerDevice.Core.ViewModels;
 
 namespace AgerDevice.Core.Models
 {
@@ -17,6 +18,7 @@ namespace AgerDevice.Core.Models
         public string PairedIds { get; set; }
         public string? Name { get; set; }
         public bool IsAcquisitioning { get; set; }
+        public string? EnvironmentConfigurations { get; set; }
 
         public Unit()
         {
@@ -73,6 +75,16 @@ namespace AgerDevice.Core.Models
             }
 
             PairedIds = Newtonsoft.Json.JsonConvert.SerializeObject(tempList.Distinct().ToList());
+        }
+
+        public UnitParametersViewModel GetParameters()
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<UnitParametersViewModel>(EnvironmentConfigurations);
+        }
+
+        public void UpdateParameters(UnitParametersViewModel model)
+        {
+            EnvironmentConfigurations = Newtonsoft.Json.JsonConvert.SerializeObject(model);
         }
     }
 }

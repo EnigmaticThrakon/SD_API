@@ -34,6 +34,8 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(Unit.IsConnected)},
                     {nameof(Unit.ConnectionId)},
                     {nameof(Unit.PairedIds)},
+                    {nameof(Unit.IsAcquisitioning)},
+                    {nameof(Unit.EnvironmentConfigurations)},
                     {nameof(Unit.Name)}
                 ) 
                 VALUES 
@@ -45,6 +47,8 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(Unit.IsConnected)},
                     @{nameof(Unit.ConnectionId)},
                     @{nameof(Unit.PairedIds)},
+                    @{nameof(Unit.IsAcquisitioning)},
+                    @{nameof(Unit.EnvironmentConfigurations)},
                     @{nameof(Unit.Name)}
                 )", unit);
             }
@@ -75,6 +79,8 @@ namespace AgerDevice.DataAccess.MySQL
                 u.{nameof(Unit.IsConnected)},
                 u.{nameof(Unit.ConnectionId)},
                 u.{nameof(Unit.PairedIds)},
+                u.{nameof(Unit.IsAcquisitioning)},
+                u.{nameof(Unit.EnvironmentConfigurations)},
                 u.{nameof(Unit.Name)}
                 FROM Units u
                 WHERE 1=1 ";
@@ -89,6 +95,12 @@ namespace AgerDevice.DataAccess.MySQL
                 {
                     parameters.Add(nameof(query.SerialNumber), query.SerialNumber, DbType.String);
                     sql += $@" AND {nameof(Unit.SerialNumber)} = @{nameof(query.SerialNumber)}";
+                }
+
+                if (query.IsAcquisitioning != null)
+                {
+                    parameters.Add(nameof(query.IsAcquisitioning), query.IsAcquisitioning, DbType.Boolean);
+                    sql += $@" AND {nameof(Unit.IsAcquisitioning)} = @{nameof(query.IsAcquisitioning)}";
                 }
 
                 if (query.Modified != null)
@@ -158,7 +170,9 @@ namespace AgerDevice.DataAccess.MySQL
                     {nameof(Unit.IsConnected)} = @{nameof(Unit.IsConnected)},
                     {nameof(Unit.ConnectionId)} = @{nameof(Unit.ConnectionId)},
                     {nameof(Unit.Name)} = @{nameof(Unit.Name)},
-                    {nameof(Unit.PairedIds)} = @{nameof(Unit.PairedIds)}
+                    {nameof(Unit.IsAcquisitioning)} = @{nameof(Unit.IsAcquisitioning)},
+                    {nameof(Unit.PairedIds)} = @{nameof(Unit.PairedIds)},
+                    {nameof(Unit.EnvironmentConfigurations)} = @{nameof(Unit.EnvironmentConfigurations)}
                     WHERE {nameof(Unit.Id)} = @{nameof(Unit.Id)}",
                 record);
             }
