@@ -79,7 +79,25 @@ namespace AgerDevice.Core.Models
 
         public UnitParametersViewModel GetParameters()
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<UnitParametersViewModel>(EnvironmentConfigurations);
+            UnitParametersViewModel returnValue = Newtonsoft.Json.JsonConvert.DeserializeObject<UnitParametersViewModel>(EnvironmentConfigurations);
+
+            if(!returnValue.AirFlow.HasValue) {
+                returnValue.AirFlow = -1;
+            }
+
+            if(!returnValue.Humidity.HasValue) {
+                returnValue.Humidity = -1;
+            }
+
+            if(!returnValue.Temperature.HasValue) {
+                returnValue.Temperature = -1;
+            }
+
+            if(!returnValue.Weight.HasValue) {
+                returnValue.Weight = -1;
+            }
+
+            return returnValue;
         }
 
         public void UpdateParameters(UnitParametersViewModel model)
