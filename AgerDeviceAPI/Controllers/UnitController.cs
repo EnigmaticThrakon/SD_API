@@ -99,7 +99,8 @@ namespace AgerDeviceAPI.Controllers
                 Modified = DateTime.Now,
                 IsDeleted = false,
                 SerialNumber = model.SerialNumber == null ? String.Empty : model.SerialNumber,
-                Name = String.IsNullOrEmpty(model.Name) ? newUnitGuid.ToString() : model.Name
+                Name = String.IsNullOrEmpty(model.Name) ? newUnitGuid.ToString() : model.Name,
+                EnvironmentConfigurations = "{}"
             };
 
             await _unitManager.CreateAsync(newUnit);
@@ -270,7 +271,7 @@ namespace AgerDeviceAPI.Controllers
 
         [HttpPut]
         [Route("start-acquisition/{unitId}")]
-        public async Task<ActionResult> StartAcquisition(Guid unitId)
+        public async Task<ActionResult<string>> StartAcquisition(Guid unitId)
         {
             if(unitId != null)
             {
@@ -279,22 +280,26 @@ namespace AgerDeviceAPI.Controllers
                 if(result.FilteredCount > 0) {
 
                     Unit currentUnit = result.First();
-
+                    DateTime? startTime = DateTime.Now;
                     try {
-                    await _acquisitionService.StartAcquisition(currentUnit.Id);
+                    startTime = await _acquisitionService.StartAcquisition(currentUnit.Id);
                     } catch {}
 
                     await _unitManager.SendCommand(currentUnit.ConnectionId, "START");
                     currentUnit.IsAcquisitioning = true;
 
                     await _unitManager.UpdateAsync(currentUnit);
-                    return Ok();
+
+                    if(startTime.HasValue)
+                        return Ok(Newtonsoft.Json.JsonConvert.SerializeObject(startTime.Value));
+
+                    return Ok(null);
                 }
 
-                return NotFound();
+                return NotFound(null);
             }
 
-            return BadRequest();
+            return BadRequest(null);
         }
 
         [HttpPut]
@@ -402,6 +407,29 @@ namespace AgerDeviceAPI.Controllers
             }
 
             return BadRequest(false);
+        }
+
+        [HttpGet]
+        [Route("acquisition-start-time/{unitId}")]
+        public async Task<ActionResult<string>> AcquisitionStartTime(Guid unitId)
+        {
+            if(unitId != null) {
+                PagedResult<Unit> result = await _unitManager.QueryAsync(new UnitQuery() { Id = unitId });
+
+                if(result.FilteredCount > 0) {
+                    DateTime? startTime = await _acquisitionService.GetStartTime(result.First().Id);
+
+                    if(startTime != null) {
+                        return Ok(Newtonsoft.Json.JsonConvert.SerializeObject(startTime.Value));
+                    }
+
+                    return Ok(null);
+                }
+
+                return NotFound(null);
+            }
+
+            return BadRequest(null);
         }
 
         #endregion NEEDED_FOR_DEMONSTRATION
