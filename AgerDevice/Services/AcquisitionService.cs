@@ -34,15 +34,29 @@ namespace AgerDevice.Services
             await Task.Run(() => { Console.WriteLine("Dumb Placeholder"); });
         }
 
-        public async Task StartAcquisition(Guid unitId)
+        public async Task<DateTime?> StartAcquisition(Guid unitId)
         {
             UnitAcquisitionService? service = null;
             service = _unitServices.GetOrAdd(unitId, x => new UnitAcquisitionService(_unitManager, unitId));
 
             if(service != null)
             {
-                await service.StartAcquisition();
+                return await service.StartAcquisition();
             }
+
+            return null;
+        }
+
+        public async Task<DateTime?> GetStartTime(Guid unitId)
+        {
+            UnitAcquisitionService? service = null;
+            _unitServices.TryGetValue(unitId, out service);
+
+            if(service != null){
+                return service.GetStartTime();
+            }
+
+            return null;
         }
 
         public async Task CreateService(Guid unitId)
