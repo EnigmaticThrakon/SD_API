@@ -3,7 +3,7 @@ using AgerDevice.Core.Query;
 
 namespace AgerDevice.Core.Repositories
 {
-    public interface IRunRepository : IAsyncCrudRepository<Run>, IAsyncQueryableRepository<Run, RunQuery> 
+    public interface IRunsRepository : IAsyncCrudRepository<Run>, IAsyncQueryableRepository<Run, RunQuery> 
     { 
     }
 }
