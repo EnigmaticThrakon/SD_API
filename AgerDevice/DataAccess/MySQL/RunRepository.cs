@@ -11,7 +11,7 @@ using AgerDevice.Core.Repositories;
 
 namespace AgerDevice.DataAccess.MySQL
 {
-    public class RunRepository : IRunRepository
+    public class RunRepository : IRunsRepository
     {
         private readonly Func<IDbConnection> _connectionFactory;
         public RunRepository(Func<IDbConnection> connectionFactory)
@@ -46,7 +46,8 @@ namespace AgerDevice.DataAccess.MySQL
                     @{nameof(Run.NumEntries)}
                 )", record);
 
-                await connection.ExecuteAsync($@"CREATE TABLE {nameof(Run.Id)} LIKE RunDataTemplate", record);
+                string newTableName = record.Id.ToString().Replace("-", "");
+                await connection.ExecuteAsync($@"CREATE TABLE {newTableName} LIKE RunDataTemplate");
             }
         }
 
