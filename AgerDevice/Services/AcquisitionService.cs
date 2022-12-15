@@ -18,10 +18,12 @@ namespace AgerDevice.Services
     {
         private ConcurrentDictionary<Guid, UnitAcquisitionService> _unitServices;
         private UnitManager _unitManager;
-        public AcquisitionService(UnitManager unitManager)
+        private RunDataManager _runDataManager;
+        public AcquisitionService(UnitManager unitManager, RunDataManager runDataManager)
         {
             _unitServices = new ConcurrentDictionary<Guid, UnitAcquisitionService>();
             _unitManager = unitManager;
+            _runDataManager = runDataManager;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken) 
@@ -34,14 +36,14 @@ namespace AgerDevice.Services
             await Task.Run(() => { Console.WriteLine("Dumb Placeholder"); });
         }
 
-        public async Task<DateTime?> StartAcquisition(Guid unitId)
+        public async Task<DateTime?> StartAcquisition(Guid unitId, Guid runId)
         {
             UnitAcquisitionService? service = null;
-            service = _unitServices.GetOrAdd(unitId, x => new UnitAcquisitionService(_unitManager, unitId));
+            service = _unitServices.GetOrAdd(unitId, x => new UnitAcquisitionService(_unitManager, _runDataManager, unitId));
 
             if(service != null)
             {
-                return await service.StartAcquisition();
+                return await service.StartAcquisition(runId);
             }
 
             return null;
@@ -65,7 +67,7 @@ namespace AgerDevice.Services
             _unitServices.TryGetValue(unitId, out service);
 
             if(service == null) {
-                service = new UnitAcquisitionService(_unitManager, unitId);
+                service = new UnitAcquisitionService(_unitManager, _runDataManager, unitId);
                 _unitServices.AddOrUpdate(unitId, service, (key, oldValue) => service);
             }
         }
