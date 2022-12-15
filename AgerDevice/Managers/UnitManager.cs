@@ -67,7 +67,7 @@ namespace AgerDevice.Managers
         //     await _monitorHub.Clients.All.SendAsync("unitUnlinked", unit);
         // }
 
-        public async Task NewData(IncomingData[] data, Guid unitId)
+        public async Task NewData(RunData[] data, Guid unitId)
         {
             await _monitorHub.Clients.Group(unitId.ToString()).SendAsync("newValue", Newtonsoft.Json.JsonConvert.SerializeObject(data));
             // await _monitorHub.Clients.All.SendAsync("newValue", Newtonsoft.Json.JsonConvert.SerializeObject(data));
