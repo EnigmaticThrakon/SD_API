@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AgerDevice.Core.Models
 {
-    public class RunData
+    public class RunData : IBase
     {
         public Guid AssociatedRun { get; set; }
         public DateTime? Timestamp { get; set; }
