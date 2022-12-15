@@ -11,7 +11,7 @@ using AgerDevice.Core.Repositories;
 
 namespace AgerDevice.DataAccess.MySQL
 {
-    public class RunDataRepository
+    public class RunDataRepository : IRunDataRepository
     {
         private readonly Func<IDbConnection> _connectionFactory;
         public RunDataRepository(Func<IDbConnection> connectionFactory)
@@ -25,7 +25,8 @@ namespace AgerDevice.DataAccess.MySQL
             {
                 connection.Open();
 
-                await connection.ExecuteAsync("INSERT INTO " + record.AssociatedRun.ToString() + $@"
+                string tableName = record.AssociatedRun.ToString().Replace("-", "");
+                await connection.ExecuteAsync("INSERT INTO " + tableName + $@" 
                 (
                     {nameof(RunData.Timestamp)},
                     {nameof(RunData.Temperature)},
@@ -58,6 +59,7 @@ namespace AgerDevice.DataAccess.MySQL
                     query.OrderByDescending(RunDataQuery.SortColumns.Modified);
                 }
 
+                string tableName = query.AssociatedRun.ToString().Replace("-", "");
                 string sql = $@"SELECT
                 u.{nameof(RunData.Timestamp)},
                 u.{nameof(RunData.Temperature)},
@@ -65,7 +67,7 @@ namespace AgerDevice.DataAccess.MySQL
                 u.{nameof(RunData.AirFlow)},
                 u.{nameof(RunData.Humidity)},
                 u.{nameof(RunData.DoorClosed)}
-                FROM " + query.AssociatedRun.ToString() + $@" u
+                FROM " + tableName + $@" u
                 WHERE 1=1 ";
 
                 if (query.Timestamp != null)
@@ -104,7 +106,7 @@ namespace AgerDevice.DataAccess.MySQL
                     sql += $@" AND {nameof(RunData.DoorClosed)} = @{nameof(query.DoorClosed)}";
                 }
 
-                Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM " + query.AssociatedRun.ToString());
+                Task<int> totalRecords = connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM " + query.AssociatedRun.ToString().Replace("-", ""));
                 Task<int> filteredRecords = connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM ({sql}) AS Results", parameters);
 
                 sql += $" ORDER BY {query.GetOrderByString()}";
@@ -123,6 +125,16 @@ namespace AgerDevice.DataAccess.MySQL
 
                 return new PagedResult<RunData>(await records, await totalRecords, await filteredRecords);
             }
+        }
+
+        public async Task Delete(Guid id)
+        {
+            return;
+        }
+
+        public async Task UpdateAsync(RunData record)
+        {
+            return;
         }
     }
 }
